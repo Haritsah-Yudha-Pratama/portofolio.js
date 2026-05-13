@@ -1,96 +1,222 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script defer src="/_vercel/insights/script.js"></script>
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/@exampledev/new.css@1.1.2/new.min.css"
-    />
-    <title>Vercel HTML Starter</title>
-    <meta
-      name="description"
-      content="High-performance HTML based website template."
-    />
-  </head>
-  <body>
-    <h1>Vercel HTML Starter</h1>
-    <p>
-      This template is a simple, but powerful single
-      <code>index.html</code> file deployed to
-      <a href="https://vercel.com">Vercel</a>. When your site is deployed, all
-      static assets (like HTML, JavaScript, CSS, images, and more) are deployed
-      globally to every
-      <a href="https://vercel.com/docs/concepts/edge-network/overview"
-        >Vercel Edge Network</a
-      >
-      region.
-    </p>
-    <h2>Simple, privacy-friendly analytics</h2>
-    <p>
-      Want to understand your visitor traffic? Vercel Analytics gives you
-      first-party, privacy-friendly traffic analytics for your HTML site. This
-      template is already configured using the following script:
-    </p>
-    <pre><code>&lt;script defer src="/_vercel/insights/script.js"&gt;&lt;/script&gt;</code></pre>
-    <p>
-      Learn more about
-      <a href="https://vercel.com/analytics">Vercel Analytics</a>.
-    </p>
-    <h2>Integrated with git</h2>
-    <p>
-      Deploying updates to your site is as simple as
-      <code>git push</code> thanks to Vercel's advanced
-      <a href="https://vercel.com/docs/concepts/git">Git Integration</a>.
-      Support for GitHub, GitLab, Bitbucket is zero-configuration, and with the
-      flexible Vercel CLI and API, you can integrate with any tool possible.
-    </p>
-    <p>
-      Learn more about
-      <a href="https://vercel.com/docs/concepts/git">Git Integration</a>.
-    </p>
-    <h2>Fast <code>gzip</code> compression</h2>
-    <p>
-      To help ensure the smallest possible file sizes for your static assets,
-      the Vercel Edge Network compresses files by default using
-      <code>gzip</code>. You can also optionally use
-      <code>brotli</code> compressesion if you prefer.
-    </p>
-    <p>
-      Learn more about
-      <a href="https://vercel.com/docs/concepts/edge-network/compression"
-        >compression</a
-      >.
-    </p>
-    <h2>Advanced routing configuration</h2>
-    <p>
-      Vercel gives you a variety of ways to configure the routing of your
-      website. For example, adding redirects, rewrites, or headers to your page.
-      While you can use <code>vercel.json</code> to define these through JSON,
-      you can also express your routing configuration as code using
-      <a href="https://vercel.com/docs/concepts/functions/edge-middleware"
-        >Vercel Edge Middleware</a
-      >.
-    </p>
-    <p>
-      Middleware runs before the
-      <a href="https://vercel.com/docs/concepts/edge-network/caching"
-        >Vercel Edge Network Cache</a
-      >, so you can configure routing exactly as your application needs. For
-      example, this template uses <code>middleware.js</code> defined in the root
-      of the repository to add additional security headers to the site:
-    </p>
-    <pre><code>referrer-policy: origin-when-cross-origin
-strict-transport-security: max-age=31536000; includeSubDomains; preload
-x-content-type-options: nosniff
-x-dns-prefetch-control: on
-x-frame-options: DENY</code></pre>
-    <p>
-      Learn more about
-      <a href="https://vercel.com/docs/concepts/functions/edge-middleware"
-        >Vercel Edge Middleware</a
-      >.
-    </p>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script defer src="/_vercel/insights/script.js"></script>
+  <title>Haritsah Yudha Pratama | Software Developer & IT Support</title>
+  <meta name="description" content="Portfolio of Haritsah Yudha Pratama - Software Developer & IT Support" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="#hero" class="nav-logo">HYP.</a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="container">
+      <p class="hero-label">Portfolio — 2025</p>
+      <h1 class="hero-title">
+        Haritsah<br>
+        Yudha <em>Pratama</em>
+      </h1>
+      <p class="hero-desc">Software Developer & IT Support based in Indonesia. Building clean, functional digital experiences.</p>
+      <a href="#contact" class="hero-cta">Get in touch →</a>
+      <div class="hero-scroll">
+        <span class="scroll-line"></span>
+        Scroll to explore
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="container fade-in">
+      <p class="section-label">About</p>
+      <h2 class="section-title">Who I Am</h2>
+      <div class="section-divider"></div>
+      <div class="about-grid">
+        <div class="about-text">
+          <p>I'm a passionate Software Developer and IT Support specialist with a strong foundation in both front-end and back-end technologies. I enjoy solving complex problems and turning ideas into clean, working software.</p>
+          <p>With experience in web development and system support, I bring a balanced perspective to every project — thinking about both the user experience and the technical architecture underneath.</p>
+          <p>When I'm not coding, I'm exploring new technologies, contributing to open-source projects, and continuously expanding my skillset.</p>
+        </div>
+        <div class="about-stats">
+          <div class="stat-card">
+            <div class="stat-num">3+</div>
+            <div class="stat-desc">Years of experience</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">10+</div>
+            <div class="stat-desc">Projects completed</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">7</div>
+            <div class="stat-desc">Technologies mastered</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">∞</div>
+            <div class="stat-desc">Passion for learning</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills">
+    <div class="container fade-in">
+      <p class="section-label">Skills</p>
+      <h2 class="section-title">Tech Stack</h2>
+      <div class="section-divider"></div>
+      <div class="skills-grid">
+        <div class="skill-card">
+          <div class="skill-name">C++</div>
+          <div class="skill-type">Systems Programming</div>
+          <div class="skill-level"><div class="skill-bar" style="width:75%"></div></div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-name">Dart</div>
+          <div class="skill-type">Mobile Development</div>
+          <div class="skill-level"><div class="skill-bar" style="width:70%"></div></div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-name">PHP</div>
+          <div class="skill-type">Backend Development</div>
+          <div class="skill-level"><div class="skill-bar" style="width:80%"></div></div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-name">CSS</div>
+          <div class="skill-type">Frontend Styling</div>
+          <div class="skill-level"><div class="skill-bar" style="width:85%"></div></div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-name">HTML</div>
+          <div class="skill-type">Markup Language</div>
+          <div class="skill-level"><div class="skill-bar" style="width:90%"></div></div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-name">JavaScript</div>
+          <div class="skill-type">Frontend & Backend</div>
+          <div class="skill-level"><div class="skill-bar" style="width:80%"></div></div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-name">CodeIgniter</div>
+          <div class="skill-type">PHP Framework</div>
+          <div class="skill-level"><div class="skill-bar" style="width:78%"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <div class="container fade-in">
+      <p class="section-label">Projects</p>
+      <h2 class="section-title">Selected Work</h2>
+      <div class="section-divider"></div>
+      <div class="projects-grid">
+        <div class="project-card">
+          <span class="project-tag">Web App</span>
+          <h3 class="project-title">HRIS System</h3>
+          <p class="project-desc">A comprehensive Human Resource Information System for managing employee data, attendance, payroll, and reporting.</p>
+          <div class="project-stack">
+            <span class="stack-pill">PHP</span>
+            <span class="stack-pill">CodeIgniter</span>
+            <span class="stack-pill">MySQL</span>
+            <span class="stack-pill">Bootstrap</span>
+          </div>
+        </div>
+        <div class="project-card">
+          <span class="project-tag">Mobile App</span>
+          <h3 class="project-title">Attendance App</h3>
+          <p class="project-desc">Mobile application for employee attendance tracking with GPS verification and real-time reporting dashboard.</p>
+          <div class="project-stack">
+            <span class="stack-pill">Dart</span>
+            <span class="stack-pill">Flutter</span>
+            <span class="stack-pill">Firebase</span>
+          </div>
+        </div>
+        <div class="project-card">
+          <span class="project-tag">Web App</span>
+          <h3 class="project-title">Inventory Management</h3>
+          <p class="project-desc">Stock and inventory management system with barcode scanning, alerts for low stock, and purchase order management.</p>
+          <div class="project-stack">
+            <span class="stack-pill">JavaScript</span>
+            <span class="stack-pill">PHP</span>
+            <span class="stack-pill">MySQL</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section id="experience">
+    <div class="container fade-in">
+      <p class="section-label">Experience</p>
+      <h2 class="section-title">Work History</h2>
+      <div class="section-divider"></div>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <p class="timeline-period">2023 — Present</p>
+          <p class="timeline-role">Software Developer & IT Support</p>
+          <p class="timeline-company">PT. Company Name (Dummy)</p>
+          <p class="timeline-desc">Developing and maintaining web applications, providing technical support for internal systems, and managing server infrastructure. Collaborating with cross-functional teams to deliver high-quality software solutions.</p>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <p class="timeline-period">2022 — 2023</p>
+          <p class="timeline-role">Junior Web Developer</p>
+          <p class="timeline-company">PT. Company Name (Dummy)</p>
+          <p class="timeline-desc">Built and maintained company websites and internal tools using PHP and CodeIgniter. Handled bug fixes, feature development, and database optimization.</p>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <p class="timeline-period">2021 — 2022</p>
+          <p class="timeline-role">IT Support Intern</p>
+          <p class="timeline-company">PT. Company Name (Dummy)</p>
+          <p class="timeline-desc">Provided first-line technical support for hardware and software issues. Assisted in network setup and maintenance, and helped document IT procedures.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="container fade-in">
+      <p class="section-label">Contact</p>
+      <h2 class="section-title">Let's Work Together</h2>
+      <div class="section-divider"></div>
+      <p style="color: var(--muted); margin-bottom: 2rem; font-weight: 300;">Have a project in mind or just want to say hi? My inbox is always open.</p>
+      <a href="mailto:yudhaharitsah@gmail.com" class="contact-email">yudhaharitsah@gmail.com</a>
+      <ul class="social-links">
+        <li><a href="https://www.linkedin.com/in/haritsah-yudha-pratama" target="_blank" rel="noopener">LinkedIn</a></li>
+        <li><a href="https://github.com/Haritsah-Yudha-Pratama" target="_blank" rel="noopener">GitHub</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2025 Haritsah Yudha Pratama. Built with ♥ and deployed on Vercel.</p>
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+
+</body>
 </html>
