@@ -2,13 +2,11 @@
 function updateProgressBar() {
   const navbar = document.getElementById('navbar');
   const progressBar = document.getElementById('navProgress');
-  
   const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
   const scrolled = (window.scrollY / totalScroll) * 100;
-  
+
   progressBar.style.width = scrolled + '%';
-  
-  // Add scrolled state to navbar
+
   if (window.scrollY > 10) {
     navbar.classList.add('scrolled');
   } else {
@@ -18,16 +16,37 @@ function updateProgressBar() {
 
 window.addEventListener('scroll', updateProgressBar, { passive: true });
 
+// ============ ACTIVE NAV LINK ON SCROLL ============
+function updateActiveLink() {
+  const sections = document.querySelectorAll('section[id]');
+  const links = document.querySelectorAll('.nav-links a');
+
+  let current = '';
+  sections.forEach(section => {
+    const sectionTop = section.offsetTop - 100;
+    if (window.scrollY >= sectionTop) {
+      current = section.getAttribute('id');
+    }
+  });
+
+  links.forEach(link => {
+    link.classList.remove('active');
+    if (link.getAttribute('href') === '#' + current) {
+      link.classList.add('active');
+    }
+  });
+}
+
+window.addEventListener('scroll', updateActiveLink, { passive: true });
+
 // ============ DARK MODE TOGGLE ============
 function initDarkMode() {
   const themeToggle = document.getElementById('themeToggle');
   const htmlElement = document.documentElement;
-  
-  // Check localStorage for saved preference
+
   const savedTheme = localStorage.getItem('theme');
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  
-  // Set initial theme
+
   if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
     htmlElement.classList.add('dark-mode');
     updateThemeIcon(true);
@@ -35,8 +54,7 @@ function initDarkMode() {
     htmlElement.classList.remove('dark-mode');
     updateThemeIcon(false);
   }
-  
-  // Theme toggle button listener
+
   themeToggle.addEventListener('click', () => {
     const isDark = htmlElement.classList.toggle('dark-mode');
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
@@ -47,7 +65,6 @@ function initDarkMode() {
 function updateThemeIcon(isDark) {
   const moonIcon = document.querySelector('.icon-moon');
   const sunIcon = document.querySelector('.icon-sun');
-  
   if (isDark) {
     moonIcon.style.display = 'none';
     sunIcon.style.display = 'block';
@@ -62,26 +79,27 @@ initDarkMode();
 // ============ MOBILE HAMBURGER MENU ============
 function initMobileMenu() {
   const hamburger = document.getElementById('hamburger');
-  const navLinks = document.getElementById('navLinks');
-  
-  hamburger.addEventListener('click', () => {
-    hamburger.classList.toggle('active');
-    navLinks.classList.toggle('active');
+  const mobileMenu = document.getElementById('mobileMenu');
+
+  hamburger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = mobileMenu.classList.toggle('open');
+    hamburger.classList.toggle('active', isOpen);
   });
-  
-  // Close menu when link is clicked
-  navLinks.querySelectorAll('a').forEach(link => {
+
+  // Close menu when a link is clicked
+  document.querySelectorAll('.mobile-link').forEach(link => {
     link.addEventListener('click', () => {
+      mobileMenu.classList.remove('open');
       hamburger.classList.remove('active');
-      navLinks.classList.remove('active');
     });
   });
-  
+
   // Close menu when clicking outside
   document.addEventListener('click', (e) => {
     if (!e.target.closest('#navbar')) {
+      mobileMenu.classList.remove('open');
       hamburger.classList.remove('active');
-      navLinks.classList.remove('active');
     }
   });
 }
