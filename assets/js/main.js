@@ -21,13 +21,20 @@ function updateActiveLink() {
   const sections = document.querySelectorAll('section[id]');
   const links = document.querySelectorAll('.nav-links a');
 
+  const isAtBottom = (window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight - 10;
+
   let current = '';
-  sections.forEach(section => {
-    const sectionTop = section.offsetTop - 100;
-    if (window.scrollY >= sectionTop) {
-      current = section.getAttribute('id');
-    }
-  });
+
+  if (isAtBottom) {
+    current = 'contact';
+  } else {
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop - 100;
+      if (window.scrollY >= sectionTop) {
+        current = section.getAttribute('id');
+      }
+    });
+  }
 
   links.forEach(link => {
     link.classList.remove('active');
@@ -49,22 +56,31 @@ function initDarkMode() {
 
   if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
     htmlElement.classList.add('dark-mode');
-    updateThemeIcon(true);
+    updateThemeIcon(true, false);
   } else {
     htmlElement.classList.remove('dark-mode');
-    updateThemeIcon(false);
+    updateThemeIcon(false, false);
   }
 
   themeToggle.addEventListener('click', () => {
     const isDark = htmlElement.classList.toggle('dark-mode');
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
-    updateThemeIcon(isDark);
+    updateThemeIcon(isDark, true);
   });
 }
 
-function updateThemeIcon(isDark) {
+function updateThemeIcon(isDark, animate) {
   const moonIcon = document.querySelector('.icon-moon');
   const sunIcon = document.querySelector('.icon-sun');
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (animate && !prefersReduced) {
+    const btn = document.getElementById('themeToggle');
+    btn.classList.add('theme-spin');
+    btn.addEventListener('animationend', () => btn.classList.remove('theme-spin'), { once: true });
+  }
+
   if (isDark) {
     moonIcon.style.display = 'none';
     sunIcon.style.display = 'block';
@@ -87,7 +103,6 @@ function initMobileMenu() {
     hamburger.classList.toggle('active', isOpen);
   });
 
-  // Close menu when a link is clicked
   document.querySelectorAll('.mobile-link').forEach(link => {
     link.addEventListener('click', () => {
       mobileMenu.classList.remove('open');
@@ -95,7 +110,6 @@ function initMobileMenu() {
     });
   });
 
-  // Close menu when clicking outside
   document.addEventListener('click', (e) => {
     if (!e.target.closest('#navbar')) {
       mobileMenu.classList.remove('open');
@@ -106,11 +120,113 @@ function initMobileMenu() {
 
 initMobileMenu();
 
+// ============ SKILL BAR ANIMATION ============
+function initSkillBars() {
+  const bars = document.querySelectorAll('.skill-bar');
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const skillObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const width = e.target.getAttribute('data-width');
+        if (prefersReduced) {
+          e.target.style.transition = 'none';
+        }
+        e.target.style.width = width + '%';
+        skillObserver.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  bars.forEach(bar => skillObserver.observe(bar));
+}
+
+initSkillBars();
+
+// ============ SCROLL TO TOP ============
+function initScrollTop() {
+  const btn = document.getElementById('scrollTop');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 400) {
+      btn.classList.add('visible');
+    } else {
+      btn.classList.remove('visible');
+    }
+  }, { passive: true });
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+}
+
+initScrollTop();
+
 // ============ FADE-IN ON SCROLL ============
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(e => {
     if (e.isIntersecting) e.target.classList.add('visible');
   });
 }, { threshold: 0.1 });
 
-document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+if (prefersReducedMotion) {
+  document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible'));
+} else {
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+}
+
+// ============ TYPING ANIMATION — HERO ROLE ============
+function initTypingAnimation() {
+  const el = document.getElementById('heroRole');
+  if (!el) return;
+
+  const roles = [
+    'Software Developer',
+    'IT Support',
+    'Embedded Systems Engineer',
+    'Mobile App Developer',
+  ];
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (prefersReduced) {
+    el.textContent = roles[0];
+    return;
+  }
+
+  let roleIndex = 0;
+  let charIndex = 0;
+  let isDeleting = false;
+  const typeSpeed = 80;
+  const deleteSpeed = 45;
+  const pauseAfterType = 1800;
+  const pauseAfterDelete = 400;
+
+  function tick() {
+    const current = roles[roleIndex];
+
+    if (!isDeleting) {
+      el.textContent = current.slice(0, charIndex + 1);
+      charIndex++;
+      if (charIndex === current.length) {
+        isDeleting = true;
+        setTimeout(tick, pauseAfterType);
+        return;
+      }
+      setTimeout(tick, typeSpeed);
+    } else {
+      el.textContent = current.slice(0, charIndex - 1);
+      charIndex--;
+      if (charIndex === 0) {
+        isDeleting = false;
+        roleIndex = (roleIndex + 1) % roles.length;
+        setTimeout(tick, pauseAfterDelete);
+        return;
+      }
+      setTimeout(tick, deleteSpeed);
+    }
+  }
+
+  tick();
+}
+
+initTypingAnimation();
