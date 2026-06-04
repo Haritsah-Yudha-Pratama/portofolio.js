@@ -29,7 +29,8 @@ function updateActiveLink() {
     current = 'contact';
   } else {
     sections.forEach(section => {
-      const sectionTop = section.offsetTop - 100;
+      // offset 120px — sedikit lebih dari tinggi navbar pill (≈ 60px + 22px top + buffer)
+      const sectionTop = section.offsetTop - 120;
       if (window.scrollY >= sectionTop) {
         current = section.getAttribute('id');
       }
@@ -181,9 +182,8 @@ function initTypingAnimation() {
 
   const roles = [
     'Software Developer',
-    'IT Support',
-    'Embedded Systems Engineer',
     'Mobile App Developer',
+    'Embedded Systems Engineer',
   ];
 
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -230,3 +230,20 @@ function initTypingAnimation() {
 }
 
 initTypingAnimation();
+
+// ============ SMOOTH SCROLL — offset untuk floating navbar ============
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function (e) {
+    const targetId = this.getAttribute('href');
+    if (targetId === '#') return;
+    const target = document.querySelector(targetId);
+    if (!target) return;
+
+    e.preventDefault();
+
+    const navbarHeight = 0;
+    const targetTop = target.getBoundingClientRect().top + window.scrollY - navbarHeight;
+
+    window.scrollTo({ top: targetTop, behavior: 'smooth' });
+  });
+});
