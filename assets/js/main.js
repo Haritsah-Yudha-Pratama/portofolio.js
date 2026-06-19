@@ -160,6 +160,107 @@ function initScrollTop() {
 
 initScrollTop();
 
+// ============ PROJECT GALLERY LIGHTBOX ============
+const galleries = {
+  'hris-new': [
+    'assets/img/HRIS-new/login.jpeg',
+    'assets/img/HRIS-new/modules.jpeg',
+    'assets/img/HRIS-new/iku_sasaran.png',
+    'assets/img/HRIS-new/iku_sasaran_from.png',
+    'assets/img/HRIS-new/iku_perencanaan.png',
+    'assets/img/HRIS-new/iku_perencanaan_detail.png',
+    'assets/img/HRIS-new/iku_perencanaan_form.png',
+    'assets/img/HRIS-new/iku_realisasi.png',
+    'assets/img/HRIS-new/iku_realisasi_form.png',
+    'assets/img/HRIS-new/iku_report.png',
+    'assets/img/HRIS-new/payroll_main.png',
+    'assets/img/HRIS-new/payroll_master_data.png',
+    'assets/img/HRIS-new/payroll_form_input_manual.png',
+  ],
+  'app-absensi': [
+    'assets/img/App Absensi/login.jpeg',
+    'assets/img/App Absensi/beranda.jpeg',
+    'assets/img/App Absensi/jadwal.jpeg',
+    'assets/img/App Absensi/riwayat.jpeg',
+    'assets/img/App Absensi/profil.jpeg',
+  ],
+  'hris-old': [
+    'assets/img/Masters/eai_main.png',
+    'assets/img/Masters/eai_form.png',
+    'assets/img/Masters/wht_main.png',
+    'assets/img/Masters/wht_form.png',
+    'assets/img/Masters/leave_main.png',
+    'assets/img/Masters/leave_form.png',
+    'assets/img/Masters/leave_detail.png',
+    'assets/img/Resignation/resignation_main.png',
+    'assets/img/Resignation/resignation_form.png',
+    'assets/img/Resignation/resignation_detail & approval.png',
+    'assets/img/Resignation/resignation_exit_interview_hr.png',
+    'assets/img/Resignation/resignation_exit_interview_owner.png',
+  ],
+  'evaluation': [
+    'assets/img/evaluation/eval_main.png',
+    'assets/img/evaluation/eval_form.png',
+    'assets/img/evaluation/eval_detail.png',
+    'assets/img/evaluation/eval_detail_form.png',
+  ],
+};
+
+function initLightbox() {
+  const lightbox = document.getElementById('lightbox');
+  const img = document.getElementById('lightboxImg');
+  const counter = document.getElementById('lightboxCounter');
+  const closeBtn = document.getElementById('lightboxClose');
+  const prevBtn = document.getElementById('lightboxPrev');
+  const nextBtn = document.getElementById('lightboxNext');
+
+  if (!lightbox) return;
+
+  let currentGallery = [];
+  let currentIndex = 0;
+
+  function show(index) {
+    if (!currentGallery.length) return;
+    currentIndex = (index + currentGallery.length) % currentGallery.length;
+    img.src = currentGallery[currentIndex];
+    counter.textContent = (currentIndex + 1) + ' / ' + currentGallery.length;
+  }
+
+  function open(galleryKey) {
+    currentGallery = galleries[galleryKey] || [];
+    if (!currentGallery.length) return;
+    show(0);
+    lightbox.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function close() {
+    lightbox.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  document.querySelectorAll('[data-gallery-trigger]').forEach(btn => {
+    btn.addEventListener('click', () => open(btn.getAttribute('data-gallery-trigger')));
+  });
+
+  closeBtn.addEventListener('click', close);
+  prevBtn.addEventListener('click', () => show(currentIndex - 1));
+  nextBtn.addEventListener('click', () => show(currentIndex + 1));
+
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox) close();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (!lightbox.classList.contains('open')) return;
+    if (e.key === 'Escape') close();
+    if (e.key === 'ArrowLeft') show(currentIndex - 1);
+    if (e.key === 'ArrowRight') show(currentIndex + 1);
+  });
+}
+
+initLightbox();
+
 // ============ FADE-IN ON SCROLL ============
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
