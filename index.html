@@ -29,7 +29,7 @@
   <link
     href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css?v=4">
+  <link rel="stylesheet" href="assets/css/style.css?v=6">
 </head>
 
 <body>
@@ -243,6 +243,16 @@
       <div class="section-divider"></div>
       <div class="projects-grid">
         <div class="project-card" data-gallery="hris-new">
+          <div class="project-preview" data-gallery="hris-new">
+            <div class="browser-frame">
+              <span class="browser-dot dot-red"></span>
+              <span class="browser-dot dot-yellow"></span>
+              <span class="browser-dot dot-green"></span>
+            </div>
+            <div class="project-preview-img">
+              <img src="" alt="" loading="lazy">
+            </div>
+          </div>
           <span class="project-tag">Web App</span>
           <h3 class="project-title">New-HRIS — Sistem HRIS Internal RSUI</h3>
           <p class="project-desc">Membangun modul Performance IKU mencakup form entry realisasi capaian dan laporan performance index dengan kalkulasi otomatis, export Excel format merged header (SheetJS), dan modul Payroll.</p>
@@ -257,6 +267,16 @@
           </button>
         </div>
         <div class="project-card" data-gallery="app-absensi">
+          <div class="project-preview project-preview-mobile" data-gallery="app-absensi">
+            <div class="browser-frame">
+              <span class="browser-dot dot-red"></span>
+              <span class="browser-dot dot-yellow"></span>
+              <span class="browser-dot dot-green"></span>
+            </div>
+            <div class="project-preview-img">
+              <img src="" alt="" loading="lazy">
+            </div>
+          </div>
           <span class="project-tag">Mobile App</span>
           <h3 class="project-title">Aplikasi Absensi RSUI</h3>
           <p class="project-desc">Sistem absensi mobile dengan face recognition dan validasi posisi GPS. Debugging session/token management, optimasi koneksi server (parallel ping dengan Completer), dan build APK split-per-ABI.</p>
@@ -271,6 +291,16 @@
           </button>
         </div>
         <div class="project-card" data-gallery="hris-old">
+          <div class="project-preview" data-gallery="hris-old">
+            <div class="browser-frame">
+              <span class="browser-dot dot-red"></span>
+              <span class="browser-dot dot-yellow"></span>
+              <span class="browser-dot dot-green"></span>
+            </div>
+            <div class="project-preview-img">
+              <img src="" alt="" loading="lazy">
+            </div>
+          </div>
           <span class="project-tag">Web App</span>
           <h3 class="project-title">HRIS-Old — Master Data & Resignation</h3>
           <p class="project-desc">Membangun Master Employee Assessment Indicator, Master Working Hour Type, Master Cuti, serta alur pengajuan dan approval Resignation pegawai secara end-to-end.</p>
@@ -284,6 +314,16 @@
           </button>
         </div>
         <div class="project-card" data-gallery="evaluation">
+          <div class="project-preview" data-gallery="evaluation">
+            <div class="browser-frame">
+              <span class="browser-dot dot-red"></span>
+              <span class="browser-dot dot-yellow"></span>
+              <span class="browser-dot dot-green"></span>
+            </div>
+            <div class="project-preview-img">
+              <img src="" alt="" loading="lazy">
+            </div>
+          </div>
           <span class="project-tag">Web App</span>
           <h3 class="project-title">Aplikasi Evaluasi & Planning</h3>
           <p class="project-desc">Aplikasi perencanaan dan evaluasi project pribadi berbasis web, dibangun dari nol untuk membantu tracking progres pekerjaan harian.</p>
@@ -476,15 +516,20 @@
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
     </button>
     <div class="lightbox-content">
-      <img id="lightboxImg" src="" alt="">
-      <div class="lightbox-counter" id="lightboxCounter"></div>
+      <div class="lightbox-frame">
+        <img id="lightboxImg" src="" alt="">
+      </div>
+      <div class="lightbox-meta">
+        <span class="lightbox-caption" id="lightboxCaption"></span>
+        <span class="lightbox-counter" id="lightboxCounter"></span>
+      </div>
     </div>
     <button class="lightbox-nav lightbox-next" id="lightboxNext" aria-label="Selanjutnya">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
     </button>
   </div>
 
-  <script src="assets/js/main.js"></script>
+  <script src="assets/js/main.js?v=3"></script>
 
 </body>
 

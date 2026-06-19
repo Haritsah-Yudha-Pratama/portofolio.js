@@ -161,54 +161,56 @@ function initScrollTop() {
 initScrollTop();
 
 // ============ PROJECT GALLERY LIGHTBOX ============
+// Tiap gambar punya src + caption (keterangan halaman/fitur apa)
 const galleries = {
   'hris-new': [
-    'assets/img/HRIS-new/login.jpeg',
-    'assets/img/HRIS-new/modules.jpeg',
-    'assets/img/HRIS-new/iku_sasaran.png',
-    'assets/img/HRIS-new/iku_sasaran_from.png',
-    'assets/img/HRIS-new/iku_perencanaan.png',
-    'assets/img/HRIS-new/iku_perencanaan_detail.png',
-    'assets/img/HRIS-new/iku_perencanaan_form.png',
-    'assets/img/HRIS-new/iku_realisasi.png',
-    'assets/img/HRIS-new/iku_realisasi_form.png',
-    'assets/img/HRIS-new/iku_report.png',
-    'assets/img/HRIS-new/payroll_main.png',
-    'assets/img/HRIS-new/payroll_master_data.png',
-    'assets/img/HRIS-new/payroll_form_input_manual.png',
+    { src: 'assets/img/HRIS-new/login.jpeg', caption: 'Halaman Login' },
+    { src: 'assets/img/HRIS-new/modules.jpeg', caption: 'Daftar Modul HRIS' },
+    { src: 'assets/img/HRIS-new/iku_sasaran.png', caption: 'IKU — Daftar Sasaran' },
+    { src: 'assets/img/HRIS-new/iku_sasaran_from.png', caption: 'IKU — Form Sasaran' },
+    { src: 'assets/img/HRIS-new/iku_perencanaan.png', caption: 'IKU — Daftar Perencanaan' },
+    { src: 'assets/img/HRIS-new/iku_perencanaan_detail.png', caption: 'IKU — Detail Perencanaan' },
+    { src: 'assets/img/HRIS-new/iku_perencanaan_form.png', caption: 'IKU — Form Perencanaan' },
+    { src: 'assets/img/HRIS-new/iku_realisasi.png', caption: 'IKU — Daftar Realisasi' },
+    { src: 'assets/img/HRIS-new/iku_realisasi_form.png', caption: 'IKU — Form Entry Realisasi' },
+    { src: 'assets/img/HRIS-new/iku_report.png', caption: 'IKU — Laporan Performance Index' },
+    { src: 'assets/img/HRIS-new/payroll_main.png', caption: 'Payroll — Halaman Utama' },
+    { src: 'assets/img/HRIS-new/payroll_master_data.png', caption: 'Payroll — Master Data' },
+    { src: 'assets/img/HRIS-new/payroll_form_input_manual.png', caption: 'Payroll — Input Manual' },
   ],
   'app-absensi': [
-    'assets/img/App Absensi/login.jpeg',
-    'assets/img/App Absensi/beranda.jpeg',
-    'assets/img/App Absensi/jadwal.jpeg',
-    'assets/img/App Absensi/riwayat.jpeg',
-    'assets/img/App Absensi/profil.jpeg',
+    { src: 'assets/img/App Absensi/login.jpeg', caption: 'Halaman Login' },
+    { src: 'assets/img/App Absensi/beranda.jpeg', caption: 'Beranda / Dashboard' },
+    { src: 'assets/img/App Absensi/jadwal.jpeg', caption: 'Jadwal — Navigasi per Bulan' },
+    { src: 'assets/img/App Absensi/riwayat.jpeg', caption: 'Riwayat Absensi' },
+    { src: 'assets/img/App Absensi/profil.jpeg', caption: 'Profil Pegawai' },
   ],
   'hris-old': [
-    'assets/img/Masters/eai_main.png',
-    'assets/img/Masters/eai_form.png',
-    'assets/img/Masters/wht_main.png',
-    'assets/img/Masters/wht_form.png',
-    'assets/img/Masters/leave_main.png',
-    'assets/img/Masters/leave_form.png',
-    'assets/img/Masters/leave_detail.png',
-    'assets/img/Resignation/resignation_main.png',
-    'assets/img/Resignation/resignation_form.png',
-    'assets/img/Resignation/resignation_detail & approval.png',
-    'assets/img/Resignation/resignation_exit_interview_hr.png',
-    'assets/img/Resignation/resignation_exit_interview_owner.png',
+    { src: 'assets/img/Masters/eai_main.png', caption: 'Employee Assessment Indicator — Daftar' },
+    { src: 'assets/img/Masters/eai_form.png', caption: 'Employee Assessment Indicator — Form' },
+    { src: 'assets/img/Masters/wht_main.png', caption: 'Working Hour Type — Daftar' },
+    { src: 'assets/img/Masters/wht_form.png', caption: 'Working Hour Type — Form' },
+    { src: 'assets/img/Masters/leave_main.png', caption: 'Master Cuti — Daftar' },
+    { src: 'assets/img/Masters/leave_form.png', caption: 'Master Cuti — Form' },
+    { src: 'assets/img/Masters/leave_detail.png', caption: 'Master Cuti — Detail' },
+    { src: 'assets/img/Resignation/resignation_main.png', caption: 'Resignation — Daftar Pengajuan' },
+    { src: 'assets/img/Resignation/resignation_form.png', caption: 'Resignation — Form Pengajuan' },
+    { src: 'assets/img/Resignation/resignation_detail & approval.png', caption: 'Resignation — Detail & Approval' },
+    { src: 'assets/img/Resignation/resignation_exit_interview_hr.png', caption: 'Resignation — Exit Interview (HR)' },
+    { src: 'assets/img/Resignation/resignation_exit_interview_owner.png', caption: 'Resignation — Exit Interview (Atasan)' },
   ],
   'evaluation': [
-    'assets/img/evaluation/eval_main.png',
-    'assets/img/evaluation/eval_form.png',
-    'assets/img/evaluation/eval_detail.png',
-    'assets/img/evaluation/eval_detail_form.png',
+    { src: 'assets/img/evaluation/eval_main.png', caption: 'Halaman Utama Evaluasi' },
+    { src: 'assets/img/evaluation/eval_form.png', caption: 'Form Tambah Evaluasi' },
+    { src: 'assets/img/evaluation/eval_detail.png', caption: 'Detail Evaluasi' },
+    { src: 'assets/img/evaluation/eval_detail_form.png', caption: 'Form Edit Detail Evaluasi' },
   ],
 };
 
 function initLightbox() {
   const lightbox = document.getElementById('lightbox');
   const img = document.getElementById('lightboxImg');
+  const caption = document.getElementById('lightboxCaption');
   const counter = document.getElementById('lightboxCounter');
   const closeBtn = document.getElementById('lightboxClose');
   const prevBtn = document.getElementById('lightboxPrev');
@@ -222,14 +224,19 @@ function initLightbox() {
   function show(index) {
     if (!currentGallery.length) return;
     currentIndex = (index + currentGallery.length) % currentGallery.length;
-    img.src = currentGallery[currentIndex];
+    const item = currentGallery[currentIndex];
+    img.classList.remove('loaded');
+    img.src = item.src;
+    caption.textContent = item.caption || '';
     counter.textContent = (currentIndex + 1) + ' / ' + currentGallery.length;
   }
 
-  function open(galleryKey) {
+  img.addEventListener('load', () => img.classList.add('loaded'));
+
+  function open(galleryKey, startIndex) {
     currentGallery = galleries[galleryKey] || [];
     if (!currentGallery.length) return;
-    show(0);
+    show(startIndex || 0);
     lightbox.classList.add('open');
     document.body.style.overflow = 'hidden';
   }
@@ -260,6 +267,29 @@ function initLightbox() {
 }
 
 initLightbox();
+
+// ============ PROJECT PREVIEW THUMBNAIL (browser mockup) ============
+// Mengisi gambar pertama tiap gallery sebagai thumbnail di project-preview
+function initProjectPreviews() {
+  document.querySelectorAll('.project-preview[data-gallery]').forEach(preview => {
+    const key = preview.getAttribute('data-gallery');
+    const gallery = galleries[key];
+    if (!gallery || !gallery.length) return;
+    const imgEl = preview.querySelector('img');
+    if (imgEl) {
+      imgEl.src = gallery[0].src;
+      imgEl.alt = gallery[0].caption || '';
+    }
+    // klik thumbnail langsung buka lightbox dari gambar pertama
+    preview.style.cursor = 'pointer';
+    preview.addEventListener('click', () => {
+      const trigger = preview.closest('.project-card')?.querySelector('[data-gallery-trigger]');
+      if (trigger) trigger.click();
+    });
+  });
+}
+
+initProjectPreviews();
 
 // ============ FADE-IN ON SCROLL ============
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -342,7 +372,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 
     e.preventDefault();
 
-    const navbarHeight = 0;
+    const navbarHeight = 0; // tinggi pill + buffer supaya section tidak ketutup navbar
     const targetTop = target.getBoundingClientRect().top + window.scrollY - navbarHeight;
 
     window.scrollTo({ top: targetTop, behavior: 'smooth' });
