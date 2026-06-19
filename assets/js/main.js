@@ -182,7 +182,7 @@ function initTypingAnimation() {
 
   const roles = [
     'Software Developer',
-    'Mobile App Developer',
+    'Staff HRIS',
     'Embedded Systems Engineer',
   ];
 
