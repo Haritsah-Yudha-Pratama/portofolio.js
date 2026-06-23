@@ -244,20 +244,18 @@ function initLightbox() {
 
   function show(index, direction) {
     if (!currentGallery.length) return;
-    const prevIndex = currentIndex;
     currentIndex = (index + currentGallery.length) % currentGallery.length;
     const item = currentGallery[currentIndex];
 
-    // tentukan arah slide: 'left' kalau maju, 'right' kalau mundur
-    const dir = direction !== undefined ? direction
-      : (currentIndex > prevIndex || (prevIndex === currentGallery.length - 1 && currentIndex === 0)) ? 'left' : 'right';
+    // Hapus semua class animasi dulu, lalu force reflow
+    img.classList.remove('anim-next', 'anim-prev');
+    void img.offsetWidth; // trigger reflow supaya animasi reset
 
-    img.classList.remove('loaded', 'slide-left');
-    if (dir === 'right') img.classList.add('slide-left');
+    // Tentukan arah slide
+    const animClass = direction === 'prev' ? 'anim-prev' : 'anim-next';
+    img.classList.add(animClass);
+
     if (loader) loader.classList.remove('hidden');
-
-    // force reflow supaya transisi reset
-    void img.offsetWidth;
 
     img.src = item.src;
     caption.textContent = item.caption || '';
@@ -268,7 +266,6 @@ function initLightbox() {
   }
 
   img.addEventListener('load', () => {
-    img.classList.add('loaded');
     if (loader) loader.classList.add('hidden');
   });
   img.addEventListener('error', () => { if (loader) loader.classList.add('hidden'); });
@@ -293,8 +290,8 @@ function initLightbox() {
   });
 
   closeBtn.addEventListener('click', close);
-  prevBtn.addEventListener('click', () => show(currentIndex - 1, 'right'));
-  nextBtn.addEventListener('click', () => show(currentIndex + 1, 'left'));
+  prevBtn.addEventListener('click', () => show(currentIndex - 1, 'prev'));
+  nextBtn.addEventListener('click', () => show(currentIndex + 1, 'next'));
 
   lightbox.addEventListener('click', (e) => {
     if (e.target === lightbox) close();
@@ -303,8 +300,8 @@ function initLightbox() {
   document.addEventListener('keydown', (e) => {
     if (!lightbox.classList.contains('open')) return;
     if (e.key === 'Escape') close();
-    if (e.key === 'ArrowLeft') show(currentIndex - 1, 'right');
-    if (e.key === 'ArrowRight') show(currentIndex + 1, 'left');
+    if (e.key === 'ArrowLeft') show(currentIndex - 1, 'prev');
+    if (e.key === 'ArrowRight') show(currentIndex + 1, 'next');
   });
 }
 
