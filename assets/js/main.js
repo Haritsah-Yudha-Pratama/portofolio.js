@@ -167,12 +167,9 @@ const galleries = {
     { src: 'assets/img/HRIS-new/login.jpeg', caption: 'Halaman Login' },
     { src: 'assets/img/HRIS-new/modules.jpeg', caption: 'Daftar Modul HRIS' },
     { src: 'assets/img/HRIS-new/iku_sasaran.png', caption: 'IKU — Daftar Sasaran' },
-    { src: 'assets/img/HRIS-new/iku_sasaran_from.png', caption: 'IKU — Form Sasaran' },
     { src: 'assets/img/HRIS-new/iku_perencanaan.png', caption: 'IKU — Daftar Perencanaan' },
     { src: 'assets/img/HRIS-new/iku_perencanaan_detail.png', caption: 'IKU — Detail Perencanaan' },
-    { src: 'assets/img/HRIS-new/iku_perencanaan_form.png', caption: 'IKU — Form Perencanaan' },
     { src: 'assets/img/HRIS-new/iku_realisasi.png', caption: 'IKU — Daftar Realisasi' },
-    { src: 'assets/img/HRIS-new/iku_realisasi_form.png', caption: 'IKU — Form Entry Realisasi' },
     { src: 'assets/img/HRIS-new/iku_report.png', caption: 'IKU — Laporan Performance Index' },
     { src: 'assets/img/HRIS-new/payroll_main.png', caption: 'Payroll — Halaman Utama' },
     { src: 'assets/img/HRIS-new/payroll_master_data.png', caption: 'Payroll — Master Data' },
@@ -187,55 +184,100 @@ const galleries = {
   ],
   'hris-old': [
     { src: 'assets/img/Masters/eai_main.png', caption: 'Employee Assessment Indicator — Daftar' },
-    { src: 'assets/img/Masters/eai_form.png', caption: 'Employee Assessment Indicator — Form' },
     { src: 'assets/img/Masters/wht_main.png', caption: 'Working Hour Type — Daftar' },
-    { src: 'assets/img/Masters/wht_form.png', caption: 'Working Hour Type — Form' },
     { src: 'assets/img/Masters/leave_main.png', caption: 'Master Cuti — Daftar' },
-    { src: 'assets/img/Masters/leave_form.png', caption: 'Master Cuti — Form' },
     { src: 'assets/img/Masters/leave_detail.png', caption: 'Master Cuti — Detail' },
     { src: 'assets/img/Resignation/resignation_main.png', caption: 'Resignation — Daftar Pengajuan' },
-    { src: 'assets/img/Resignation/resignation_form.png', caption: 'Resignation — Form Pengajuan' },
     { src: 'assets/img/Resignation/resignation_detail & approval.png', caption: 'Resignation — Detail & Approval' },
     { src: 'assets/img/Resignation/resignation_exit_interview_hr.png', caption: 'Resignation — Exit Interview (HR)' },
     { src: 'assets/img/Resignation/resignation_exit_interview_owner.png', caption: 'Resignation — Exit Interview (Atasan)' },
   ],
   'evaluation': [
     { src: 'assets/img/evaluation/eval_main.png', caption: 'Halaman Utama Evaluasi' },
-    { src: 'assets/img/evaluation/eval_form.png', caption: 'Form Tambah Evaluasi' },
     { src: 'assets/img/evaluation/eval_detail.png', caption: 'Detail Evaluasi' },
-    { src: 'assets/img/evaluation/eval_detail_form.png', caption: 'Form Edit Detail Evaluasi' },
   ],
 };
 
+const galleryNames = {
+  'hris-new':    'New-HRIS — Sistem HRIS Internal RSUI',
+  'app-absensi': 'Aplikasi Absensi RSUI',
+  'hris-old':    'HRIS-Old — Master Data & Resignation',
+  'evaluation':  'Aplikasi Evaluasi & Planning',
+};
+
 function initLightbox() {
-  const lightbox = document.getElementById('lightbox');
-  const img = document.getElementById('lightboxImg');
-  const caption = document.getElementById('lightboxCaption');
-  const counter = document.getElementById('lightboxCounter');
-  const closeBtn = document.getElementById('lightboxClose');
-  const prevBtn = document.getElementById('lightboxPrev');
-  const nextBtn = document.getElementById('lightboxNext');
+  const lightbox    = document.getElementById('lightbox');
+  const img         = document.getElementById('lightboxImg');
+  const caption     = document.getElementById('lightboxCaption');
+  const counter     = document.getElementById('lightboxCounter');
+  const projectName = document.getElementById('lightboxProjectName');
+  const thumbsEl    = document.getElementById('lightboxThumbs');
+  const loader      = document.getElementById('lightboxLoader');
+  const closeBtn    = document.getElementById('lightboxClose');
+  const prevBtn     = document.getElementById('lightboxPrev');
+  const nextBtn     = document.getElementById('lightboxNext');
 
   if (!lightbox) return;
 
   let currentGallery = [];
   let currentIndex = 0;
 
-  function show(index) {
+  function buildThumbs() {
+    thumbsEl.innerHTML = '';
+    currentGallery.forEach((item, i) => {
+      const div = document.createElement('div');
+      div.className = 'lb-thumb' + (i === currentIndex ? ' active' : '');
+      const tImg = document.createElement('img');
+      tImg.src = item.src;
+      tImg.alt = item.caption || '';
+      tImg.loading = 'lazy';
+      div.appendChild(tImg);
+      div.addEventListener('click', () => show(i));
+      thumbsEl.appendChild(div);
+    });
+  }
+
+  function scrollThumbIntoView(index) {
+    const thumbs = thumbsEl.querySelectorAll('.lb-thumb');
+    if (thumbs[index]) thumbs[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }
+
+  function show(index, direction) {
     if (!currentGallery.length) return;
+    const prevIndex = currentIndex;
     currentIndex = (index + currentGallery.length) % currentGallery.length;
     const item = currentGallery[currentIndex];
-    img.classList.remove('loaded');
+
+    // tentukan arah slide: 'left' kalau maju, 'right' kalau mundur
+    const dir = direction !== undefined ? direction
+      : (currentIndex > prevIndex || (prevIndex === currentGallery.length - 1 && currentIndex === 0)) ? 'left' : 'right';
+
+    img.classList.remove('loaded', 'slide-left');
+    if (dir === 'right') img.classList.add('slide-left');
+    if (loader) loader.classList.remove('hidden');
+
+    // force reflow supaya transisi reset
+    void img.offsetWidth;
+
     img.src = item.src;
     caption.textContent = item.caption || '';
     counter.textContent = (currentIndex + 1) + ' / ' + currentGallery.length;
+
+    thumbsEl.querySelectorAll('.lb-thumb').forEach((t, i) => t.classList.toggle('active', i === currentIndex));
+    scrollThumbIntoView(currentIndex);
   }
 
-  img.addEventListener('load', () => img.classList.add('loaded'));
+  img.addEventListener('load', () => {
+    img.classList.add('loaded');
+    if (loader) loader.classList.add('hidden');
+  });
+  img.addEventListener('error', () => { if (loader) loader.classList.add('hidden'); });
 
   function open(galleryKey, startIndex) {
     currentGallery = galleries[galleryKey] || [];
     if (!currentGallery.length) return;
+    if (projectName) projectName.textContent = galleryNames[galleryKey] || galleryKey;
+    buildThumbs();
     show(startIndex || 0);
     lightbox.classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -251,8 +293,8 @@ function initLightbox() {
   });
 
   closeBtn.addEventListener('click', close);
-  prevBtn.addEventListener('click', () => show(currentIndex - 1));
-  nextBtn.addEventListener('click', () => show(currentIndex + 1));
+  prevBtn.addEventListener('click', () => show(currentIndex - 1, 'right'));
+  nextBtn.addEventListener('click', () => show(currentIndex + 1, 'left'));
 
   lightbox.addEventListener('click', (e) => {
     if (e.target === lightbox) close();
@@ -261,35 +303,21 @@ function initLightbox() {
   document.addEventListener('keydown', (e) => {
     if (!lightbox.classList.contains('open')) return;
     if (e.key === 'Escape') close();
-    if (e.key === 'ArrowLeft') show(currentIndex - 1);
-    if (e.key === 'ArrowRight') show(currentIndex + 1);
+    if (e.key === 'ArrowLeft') show(currentIndex - 1, 'right');
+    if (e.key === 'ArrowRight') show(currentIndex + 1, 'left');
   });
 }
 
 initLightbox();
 
-// ============ PROJECT PREVIEW THUMBNAIL (browser mockup) ============
-// Mengisi gambar pertama tiap gallery sebagai thumbnail di project-preview
-function initProjectPreviews() {
-  document.querySelectorAll('.project-preview[data-gallery]').forEach(preview => {
-    const key = preview.getAttribute('data-gallery');
-    const gallery = galleries[key];
-    if (!gallery || !gallery.length) return;
-    const imgEl = preview.querySelector('img');
-    if (imgEl) {
-      imgEl.src = gallery[0].src;
-      imgEl.alt = gallery[0].caption || '';
-    }
-    // klik thumbnail langsung buka lightbox dari gambar pertama
-    preview.style.cursor = 'pointer';
-    preview.addEventListener('click', () => {
-      const trigger = preview.closest('.project-card')?.querySelector('[data-gallery-trigger]');
-      if (trigger) trigger.click();
-    });
+// ============ PROJECT PREVIEW — klik stack buka lightbox ============
+document.querySelectorAll('.project-preview[data-gallery]').forEach(preview => {
+  preview.style.cursor = 'pointer';
+  preview.addEventListener('click', () => {
+    const trigger = preview.closest('.project-card')?.querySelector('[data-gallery-trigger]');
+    if (trigger) trigger.click();
   });
-}
-
-initProjectPreviews();
+});
 
 // ============ FADE-IN ON SCROLL ============
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

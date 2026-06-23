@@ -244,13 +244,15 @@
       <div class="projects-grid">
         <div class="project-card" data-gallery="hris-new">
           <div class="project-preview" data-gallery="hris-new">
-            <div class="browser-frame">
-              <span class="browser-dot dot-red"></span>
-              <span class="browser-dot dot-yellow"></span>
-              <span class="browser-dot dot-green"></span>
+            <!-- belakang: gambar kedua, pudar & miring kiri -->
+            <div class="stack-shot back">
+              <div class="stack-bar"><span class="stack-dot dot-red"></span><span class="stack-dot dot-yellow"></span><span class="stack-dot dot-green"></span></div>
+              <img class="stack-img" src="assets/img/HRIS-new/iku_realisasi.png" alt="" loading="lazy">
             </div>
-            <div class="project-preview-img">
-              <img src="" alt="" loading="lazy">
+            <!-- depan: gambar pertama, tajam & miring kanan -->
+            <div class="stack-shot front">
+              <div class="stack-bar"><span class="stack-dot dot-red"></span><span class="stack-dot dot-yellow"></span><span class="stack-dot dot-green"></span></div>
+              <img class="stack-img" src="assets/img/HRIS-new/iku_report.png" alt="" loading="lazy">
             </div>
           </div>
           <span class="project-tag">Web App</span>
@@ -268,13 +270,13 @@
         </div>
         <div class="project-card" data-gallery="app-absensi">
           <div class="project-preview project-preview-mobile" data-gallery="app-absensi">
-            <div class="browser-frame">
-              <span class="browser-dot dot-red"></span>
-              <span class="browser-dot dot-yellow"></span>
-              <span class="browser-dot dot-green"></span>
+            <div class="stack-shot back">
+              <div class="stack-bar"><span class="stack-dot dot-red"></span><span class="stack-dot dot-yellow"></span><span class="stack-dot dot-green"></span></div>
+              <img class="stack-img" src="assets/img/App Absensi/riwayat.jpeg" alt="" loading="lazy">
             </div>
-            <div class="project-preview-img">
-              <img src="" alt="" loading="lazy">
+            <div class="stack-shot front">
+              <div class="stack-bar"><span class="stack-dot dot-red"></span><span class="stack-dot dot-yellow"></span><span class="stack-dot dot-green"></span></div>
+              <img class="stack-img" src="assets/img/App Absensi/beranda.jpeg" alt="" loading="lazy">
             </div>
           </div>
           <span class="project-tag">Mobile App</span>
@@ -292,13 +294,13 @@
         </div>
         <div class="project-card" data-gallery="hris-old">
           <div class="project-preview" data-gallery="hris-old">
-            <div class="browser-frame">
-              <span class="browser-dot dot-red"></span>
-              <span class="browser-dot dot-yellow"></span>
-              <span class="browser-dot dot-green"></span>
+            <div class="stack-shot back">
+              <div class="stack-bar"><span class="stack-dot dot-red"></span><span class="stack-dot dot-yellow"></span><span class="stack-dot dot-green"></span></div>
+              <img class="stack-img" src="assets/img/Resignation/resignation_detail & approval.png" alt="" loading="lazy">
             </div>
-            <div class="project-preview-img">
-              <img src="" alt="" loading="lazy">
+            <div class="stack-shot front">
+              <div class="stack-bar"><span class="stack-dot dot-red"></span><span class="stack-dot dot-yellow"></span><span class="stack-dot dot-green"></span></div>
+              <img class="stack-img" src="assets/img/Resignation/resignation_main.png" alt="" loading="lazy">
             </div>
           </div>
           <span class="project-tag">Web App</span>
@@ -315,13 +317,13 @@
         </div>
         <div class="project-card" data-gallery="evaluation">
           <div class="project-preview" data-gallery="evaluation">
-            <div class="browser-frame">
-              <span class="browser-dot dot-red"></span>
-              <span class="browser-dot dot-yellow"></span>
-              <span class="browser-dot dot-green"></span>
+            <div class="stack-shot back">
+              <div class="stack-bar"><span class="stack-dot dot-red"></span><span class="stack-dot dot-yellow"></span><span class="stack-dot dot-green"></span></div>
+              <img class="stack-img" src="assets/img/evaluation/eval_detail.png" alt="" loading="lazy">
             </div>
-            <div class="project-preview-img">
-              <img src="" alt="" loading="lazy">
+            <div class="stack-shot front">
+              <div class="stack-bar"><span class="stack-dot dot-red"></span><span class="stack-dot dot-yellow"></span><span class="stack-dot dot-green"></span></div>
+              <img class="stack-img" src="assets/img/evaluation/eval_main.png" alt="" loading="lazy">
             </div>
           </div>
           <span class="project-tag">Web App</span>
@@ -508,25 +510,46 @@
   </footer>
 
   <!-- LIGHTBOX GALLERY -->
-  <div class="lightbox" id="lightbox">
-    <button class="lightbox-close" id="lightboxClose" aria-label="Tutup">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-    </button>
-    <button class="lightbox-nav lightbox-prev" id="lightboxPrev" aria-label="Sebelumnya">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-    </button>
-    <div class="lightbox-content">
-      <div class="lightbox-frame">
-        <img id="lightboxImg" src="" alt="">
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Screenshot viewer">
+
+    <!-- Header -->
+    <div class="lightbox-header">
+      <div class="lightbox-header-left">
+        <div class="lightbox-header-dots">
+          <span class="lh-dot dot-red"></span>
+          <span class="lh-dot dot-yellow"></span>
+          <span class="lh-dot dot-green"></span>
+        </div>
+        <span class="lightbox-project-name" id="lightboxProjectName"></span>
       </div>
-      <div class="lightbox-meta">
-        <span class="lightbox-caption" id="lightboxCaption"></span>
+      <div class="lightbox-header-right">
         <span class="lightbox-counter" id="lightboxCounter"></span>
+        <button class="lightbox-close" id="lightboxClose" aria-label="Tutup">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
       </div>
     </div>
-    <button class="lightbox-nav lightbox-next" id="lightboxNext" aria-label="Selanjutnya">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-    </button>
+
+    <!-- Main image area -->
+    <div class="lightbox-stage">
+      <button class="lightbox-nav lightbox-prev" id="lightboxPrev" aria-label="Sebelumnya">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <div class="lightbox-frame">
+        <img id="lightboxImg" src="" alt="">
+        <div class="lightbox-loader" id="lightboxLoader"></div>
+      </div>
+      <button class="lightbox-nav lightbox-next" id="lightboxNext" aria-label="Selanjutnya">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+    </div>
+
+    <!-- Footer: caption + thumbnail strip -->
+    <div class="lightbox-footer">
+      <p class="lightbox-caption" id="lightboxCaption"></p>
+      <div class="lightbox-thumbs" id="lightboxThumbs"></div>
+    </div>
+
   </div>
 
   <script src="assets/js/main.js?v=3"></script>
