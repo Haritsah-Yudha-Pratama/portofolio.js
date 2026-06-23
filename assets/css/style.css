@@ -69,7 +69,7 @@ body {
   top: 0;
   left: 0;
   height: 2px;
-  background: linear-gradient(90deg, var(--accent2) 0%, var(--accent-light) 100%);
+  background: linear-gradient(90deg, var(--accent) 0%, var(--accent2) 100%);
   width: 0%;
   z-index: 200;
   transition: width 0.1s ease;
@@ -1230,27 +1230,59 @@ html.dark-mode .dot-green  { background: #10b981; }
 .cert-card {
   background: var(--bg2);
   border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 1.5rem;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
   display: flex;
-  gap: 1rem;
-  align-items: flex-start;
-  transition: border-color 0.2s, transform 0.2s;
+  flex-direction: column;
 }
 
-.cert-card:hover { border-color: var(--accent2); transform: translateY(-2px); }
-.cert-card.cert-placeholder { opacity: 0.5; border-style: dashed; }
+.cert-card:hover {
+  border-color: var(--accent2);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(37, 99, 168, 0.12);
+}
 
-.cert-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 10px;
-  background: var(--accent-light);
+.cert-preview {
+  position: relative;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+  height: 140px;
+  cursor: pointer;
+}
+
+.cert-browser-bar {
   display: flex;
   align-items: center;
-  justify-content: center;
-  color: var(--accent2);
+  gap: 4px;
+  padding: 5px 8px;
+  background: var(--bg2);
+  border-bottom: 0.5px solid var(--border);
   flex-shrink: 0;
+}
+
+.cert-canvas-wrap {
+  width: 100%;
+  height: calc(140px - 22px);
+  overflow: hidden;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  background: #fff;
+}
+
+.cert-canvas-wrap canvas {
+  width: 100% !important;
+  height: auto !important;
+  display: block;
+}
+
+.cert-body {
+  padding: 1.25rem 1.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .cert-name { font-size: 0.925rem; font-weight: 500; color: var(--accent); margin-bottom: 0.2rem; }

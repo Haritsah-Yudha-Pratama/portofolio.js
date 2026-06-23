@@ -190,7 +190,7 @@ const galleries = {
     { src: 'assets/img/Resignation/resignation_main.png', caption: 'Resignation — Daftar Pengajuan' },
     { src: 'assets/img/Resignation/resignation_detail & approval.png', caption: 'Resignation — Detail & Approval' },
     { src: 'assets/img/Resignation/resignation_exit_interview_hr.png', caption: 'Resignation — Exit Interview (HR)' },
-    { src: 'assets/img/Resignation/resignation_exit_interview_owner.png', caption: 'Resignation — Exit Interview (Atasan)' },
+    { src: 'assets/img/Resignation/resignation_exit_interview_owner.png', caption: 'Resignation — Exit Interview (Owner)' },
   ],
   'evaluation': [
     { src: 'assets/img/evaluation/eval_main.png', caption: 'Halaman Utama Evaluasi' },
@@ -199,23 +199,23 @@ const galleries = {
 };
 
 const galleryNames = {
-  'hris-new':    'New-HRIS — Sistem HRIS Internal RSUI',
+  'hris-new': 'New-HRIS — Sistem HRIS Internal RSUI',
   'app-absensi': 'Aplikasi Absensi RSUI',
-  'hris-old':    'HRIS-Old — Master Data & Resignation',
-  'evaluation':  'Aplikasi Evaluasi & Planning',
+  'hris-old': 'HRIS-Old — Master Data & Resignation',
+  'evaluation': 'Aplikasi Evaluasi & Planning',
 };
 
 function initLightbox() {
-  const lightbox    = document.getElementById('lightbox');
-  const img         = document.getElementById('lightboxImg');
-  const caption     = document.getElementById('lightboxCaption');
-  const counter     = document.getElementById('lightboxCounter');
+  const lightbox = document.getElementById('lightbox');
+  const img = document.getElementById('lightboxImg');
+  const caption = document.getElementById('lightboxCaption');
+  const counter = document.getElementById('lightboxCounter');
   const projectName = document.getElementById('lightboxProjectName');
-  const thumbsEl    = document.getElementById('lightboxThumbs');
-  const loader      = document.getElementById('lightboxLoader');
-  const closeBtn    = document.getElementById('lightboxClose');
-  const prevBtn     = document.getElementById('lightboxPrev');
-  const nextBtn     = document.getElementById('lightboxNext');
+  const thumbsEl = document.getElementById('lightboxThumbs');
+  const loader = document.getElementById('lightboxLoader');
+  const closeBtn = document.getElementById('lightboxClose');
+  const prevBtn = document.getElementById('lightboxPrev');
+  const nextBtn = document.getElementById('lightboxNext');
 
   if (!lightbox) return;
 
@@ -307,7 +307,55 @@ function initLightbox() {
 
 initLightbox();
 
-// ============ PROJECT PREVIEW — klik stack buka lightbox ============
+// ============ PDF THUMBNAIL (sertifikat) ============
+function initCertThumbnails() {
+  const certs = [
+    {
+      canvasId: 'certCanvas1',
+      wrapperId: 'certThumb1',
+      pdf: 'assets/certificates/sertifikat_c959aaab-56d9-42dc-81b4-6045e7850e27 (1).pdf',
+      link: 'assets/certificates/sertifikat_c959aaab-56d9-42dc-81b4-6045e7850e27 (1).pdf',
+    },
+  ];
+
+  if (typeof pdfjsLib === 'undefined') return;
+
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+  certs.forEach(({ canvasId, wrapperId, pdf, link }) => {
+    const canvas = document.getElementById(canvasId);
+    const wrapper = document.getElementById(wrapperId);
+    if (!canvas || !wrapper) return;
+
+    pdfjsLib.getDocument(pdf).promise.then(doc => {
+      return doc.getPage(1);
+    }).then(page => {
+      const viewport = page.getViewport({ scale: 1 });
+      // render lebar penuh container, *2 untuk retina
+      const wrap = canvas.closest('.cert-canvas-wrap');
+      const w = (wrap ? wrap.offsetWidth : 200) || 200;
+      const scale = (w / viewport.width) * 2;
+      const scaled = page.getViewport({ scale });
+
+      canvas.width = scaled.width;
+      canvas.height = scaled.height;
+
+      page.render({
+        canvasContext: canvas.getContext('2d'),
+        viewport: scaled,
+      });
+    }).catch(() => {
+      const wrap = canvas.closest('.cert-canvas-wrap');
+      if (wrap) wrap.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div>`;
+    });
+
+    // Klik area preview buka PDF
+    wrapper.addEventListener('click', () => window.open(link, '_blank', 'noopener'));
+  });
+}
+
+initCertThumbnails();
 document.querySelectorAll('.project-preview[data-gallery]').forEach(preview => {
   preview.style.cursor = 'pointer';
   preview.addEventListener('click', () => {
@@ -337,8 +385,9 @@ function initTypingAnimation() {
   if (!el) return;
 
   const roles = [
+    'IT Staff HRIS',
     'Software Developer',
-    'Staff HRIS',
+    'Mobile App Developer',
     'Embedded Systems Engineer',
   ];
 
