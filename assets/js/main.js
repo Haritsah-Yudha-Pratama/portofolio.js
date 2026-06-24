@@ -4,57 +4,38 @@ function updateProgressBar() {
   const progressBar = document.getElementById('navProgress');
   const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
   const scrolled = (window.scrollY / totalScroll) * 100;
-
   progressBar.style.width = scrolled + '%';
-
-  if (window.scrollY > 10) {
-    navbar.classList.add('scrolled');
-  } else {
-    navbar.classList.remove('scrolled');
-  }
+  if (window.scrollY > 10) navbar.classList.add('scrolled');
+  else navbar.classList.remove('scrolled');
 }
-
 window.addEventListener('scroll', updateProgressBar, { passive: true });
 
 // ============ ACTIVE NAV LINK ON SCROLL ============
 function updateActiveLink() {
   const sections = document.querySelectorAll('section[id]');
   const links = document.querySelectorAll('.nav-links a');
-
   const isAtBottom = (window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight - 10;
-
   let current = '';
-
   if (isAtBottom) {
     current = 'contact';
   } else {
     sections.forEach(section => {
-      // offset 120px — sedikit lebih dari tinggi navbar pill (≈ 60px + 22px top + buffer)
-      const sectionTop = section.offsetTop - 120;
-      if (window.scrollY >= sectionTop) {
-        current = section.getAttribute('id');
-      }
+      if (window.scrollY >= section.offsetTop - 120) current = section.getAttribute('id');
     });
   }
-
   links.forEach(link => {
     link.classList.remove('active');
-    if (link.getAttribute('href') === '#' + current) {
-      link.classList.add('active');
-    }
+    if (link.getAttribute('href') === '#' + current) link.classList.add('active');
   });
 }
-
 window.addEventListener('scroll', updateActiveLink, { passive: true });
 
 // ============ DARK MODE TOGGLE ============
 function initDarkMode() {
   const themeToggle = document.getElementById('themeToggle');
   const htmlElement = document.documentElement;
-
   const savedTheme = localStorage.getItem('theme');
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
   if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
     htmlElement.classList.add('dark-mode');
     updateThemeIcon(true, false);
@@ -62,7 +43,6 @@ function initDarkMode() {
     htmlElement.classList.remove('dark-mode');
     updateThemeIcon(false, false);
   }
-
   themeToggle.addEventListener('click', () => {
     const isDark = htmlElement.classList.toggle('dark-mode');
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
@@ -73,22 +53,14 @@ function initDarkMode() {
 function updateThemeIcon(isDark, animate) {
   const moonIcon = document.querySelector('.icon-moon');
   const sunIcon = document.querySelector('.icon-sun');
-
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
   if (animate && !prefersReduced) {
     const btn = document.getElementById('themeToggle');
     btn.classList.add('theme-spin');
     btn.addEventListener('animationend', () => btn.classList.remove('theme-spin'), { once: true });
   }
-
-  if (isDark) {
-    moonIcon.style.display = 'none';
-    sunIcon.style.display = 'block';
-  } else {
-    moonIcon.style.display = 'block';
-    sunIcon.style.display = 'none';
-  }
+  if (isDark) { moonIcon.style.display = 'none'; sunIcon.style.display = 'block'; }
+  else { moonIcon.style.display = 'block'; sunIcon.style.display = 'none'; }
 }
 
 initDarkMode();
@@ -121,7 +93,7 @@ function initMobileMenu() {
 
 initMobileMenu();
 
-// ============ SKILL BAR ANIMATION ============
+// ============ SKILL BAR ANIMATION + TOOLTIP ============
 function initSkillBars() {
   const bars = document.querySelectorAll('.skill-bar');
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -130,15 +102,32 @@ function initSkillBars() {
     entries.forEach(e => {
       if (e.isIntersecting) {
         const width = e.target.getAttribute('data-width');
-        if (prefersReduced) {
-          e.target.style.transition = 'none';
-        }
+        if (prefersReduced) e.target.style.transition = 'none';
         e.target.style.width = width + '%';
         skillObserver.unobserve(e.target);
       }
     });
   }, { threshold: 0.1 });
-  bars.forEach(bar => skillObserver.observe(bar));
+
+  bars.forEach(bar => {
+    skillObserver.observe(bar);
+
+    // Tooltip persen saat hover
+    const tooltip = document.createElement('span');
+    tooltip.className = 'skill-tooltip';
+    tooltip.textContent = bar.getAttribute('data-width') + '%';
+    bar.parentElement.style.position = 'relative';
+    bar.parentElement.appendChild(tooltip);
+
+    bar.parentElement.addEventListener('mouseenter', () => {
+      tooltip.style.opacity = '1';
+      tooltip.style.transform = 'translateY(-4px)';
+    });
+    bar.parentElement.addEventListener('mouseleave', () => {
+      tooltip.style.opacity = '0';
+      tooltip.style.transform = 'translateY(0)';
+    });
+  });
 }
 
 initSkillBars();
@@ -147,21 +136,13 @@ initSkillBars();
 function initScrollTop() {
   const btn = document.getElementById('scrollTop');
   window.addEventListener('scroll', () => {
-    if (window.scrollY > 400) {
-      btn.classList.add('visible');
-    } else {
-      btn.classList.remove('visible');
-    }
+    btn.classList.toggle('visible', window.scrollY > 400);
   }, { passive: true });
-  btn.addEventListener('click', () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  });
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 }
-
 initScrollTop();
 
 // ============ PROJECT GALLERY LIGHTBOX ============
-// Tiap gambar punya src + caption (keterangan halaman/fitur apa)
 const galleries = {
   'hris-new': [
     { src: 'assets/img/HRIS-new/login.jpeg', caption: 'Halaman Login' },
@@ -199,23 +180,24 @@ const galleries = {
 };
 
 const galleryNames = {
-  'hris-new': 'New-HRIS — Sistem HRIS Internal RSUI',
+  'hris-new':    'New-HRIS — Sistem HRIS Internal RSUI',
   'app-absensi': 'Aplikasi Absensi RSUI',
-  'hris-old': 'HRIS-Old — Master Data & Resignation',
-  'evaluation': 'Aplikasi Evaluasi & Planning',
+  'hris-old':    'HRIS-Old — Master Data & Resignation',
+  'evaluation':  'Aplikasi Evaluasi & Planning',
 };
 
 function initLightbox() {
-  const lightbox = document.getElementById('lightbox');
-  const img = document.getElementById('lightboxImg');
-  const caption = document.getElementById('lightboxCaption');
-  const counter = document.getElementById('lightboxCounter');
+  const lightbox    = document.getElementById('lightbox');
+  const img         = document.getElementById('lightboxImg');
+  const caption     = document.getElementById('lightboxCaption');
+  const counter     = document.getElementById('lightboxCounter');
   const projectName = document.getElementById('lightboxProjectName');
-  const thumbsEl = document.getElementById('lightboxThumbs');
-  const loader = document.getElementById('lightboxLoader');
-  const closeBtn = document.getElementById('lightboxClose');
-  const prevBtn = document.getElementById('lightboxPrev');
-  const nextBtn = document.getElementById('lightboxNext');
+  const thumbsEl    = document.getElementById('lightboxThumbs');
+  const loader      = document.getElementById('lightboxLoader');
+  const closeBtn    = document.getElementById('lightboxClose');
+  const prevBtn     = document.getElementById('lightboxPrev');
+  const nextBtn     = document.getElementById('lightboxNext');
+  const frame       = document.querySelector('.lightbox-frame');
 
   if (!lightbox) return;
 
@@ -232,7 +214,7 @@ function initLightbox() {
       tImg.alt = item.caption || '';
       tImg.loading = 'lazy';
       div.appendChild(tImg);
-      div.addEventListener('click', () => show(i));
+      div.addEventListener('click', () => show(i, i > currentIndex ? 'next' : 'prev'));
       thumbsEl.appendChild(div);
     });
   }
@@ -247,16 +229,11 @@ function initLightbox() {
     currentIndex = (index + currentGallery.length) % currentGallery.length;
     const item = currentGallery[currentIndex];
 
-    // Hapus semua class animasi dulu, lalu force reflow
     img.classList.remove('anim-next', 'anim-prev');
-    void img.offsetWidth; // trigger reflow supaya animasi reset
-
-    // Tentukan arah slide
-    const animClass = direction === 'prev' ? 'anim-prev' : 'anim-next';
-    img.classList.add(animClass);
+    void img.offsetWidth;
+    img.classList.add(direction === 'prev' ? 'anim-prev' : 'anim-next');
 
     if (loader) loader.classList.remove('hidden');
-
     img.src = item.src;
     caption.textContent = item.caption || '';
     counter.textContent = (currentIndex + 1) + ' / ' + currentGallery.length;
@@ -265,9 +242,7 @@ function initLightbox() {
     scrollThumbIntoView(currentIndex);
   }
 
-  img.addEventListener('load', () => {
-    if (loader) loader.classList.add('hidden');
-  });
+  img.addEventListener('load', () => { if (loader) loader.classList.add('hidden'); });
   img.addEventListener('error', () => { if (loader) loader.classList.add('hidden'); });
 
   function open(galleryKey, startIndex) {
@@ -275,7 +250,7 @@ function initLightbox() {
     if (!currentGallery.length) return;
     if (projectName) projectName.textContent = galleryNames[galleryKey] || galleryKey;
     buildThumbs();
-    show(startIndex || 0);
+    show(startIndex || 0, 'next');
     lightbox.classList.add('open');
     document.body.style.overflow = 'hidden';
   }
@@ -293,9 +268,7 @@ function initLightbox() {
   prevBtn.addEventListener('click', () => show(currentIndex - 1, 'prev'));
   nextBtn.addEventListener('click', () => show(currentIndex + 1, 'next'));
 
-  lightbox.addEventListener('click', (e) => {
-    if (e.target === lightbox) close();
-  });
+  lightbox.addEventListener('click', (e) => { if (e.target === lightbox) close(); });
 
   document.addEventListener('keydown', (e) => {
     if (!lightbox.classList.contains('open')) return;
@@ -303,59 +276,29 @@ function initLightbox() {
     if (e.key === 'ArrowLeft') show(currentIndex - 1, 'prev');
     if (e.key === 'ArrowRight') show(currentIndex + 1, 'next');
   });
+
+  // ---- Swipe gesture mobile ----
+  if (frame) {
+    let touchStartX = 0;
+    let touchStartY = 0;
+    frame.addEventListener('touchstart', (e) => {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+    frame.addEventListener('touchend', (e) => {
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      const dy = e.changedTouches[0].clientY - touchStartY;
+      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+        if (dx < 0) show(currentIndex + 1, 'next');
+        else show(currentIndex - 1, 'prev');
+      }
+    }, { passive: true });
+  }
 }
 
 initLightbox();
 
-// ============ PDF THUMBNAIL (sertifikat) ============
-function initCertThumbnails() {
-  const certs = [
-    {
-      canvasId: 'certCanvas1',
-      wrapperId: 'certThumb1',
-      pdf: 'assets/certificates/sertifikat_c959aaab-56d9-42dc-81b4-6045e7850e27 (1).pdf',
-      link: 'assets/certificates/sertifikat_c959aaab-56d9-42dc-81b4-6045e7850e27 (1).pdf',
-    },
-  ];
-
-  if (typeof pdfjsLib === 'undefined') return;
-
-  pdfjsLib.GlobalWorkerOptions.workerSrc =
-    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
-  certs.forEach(({ canvasId, wrapperId, pdf, link }) => {
-    const canvas = document.getElementById(canvasId);
-    const wrapper = document.getElementById(wrapperId);
-    if (!canvas || !wrapper) return;
-
-    pdfjsLib.getDocument(pdf).promise.then(doc => {
-      return doc.getPage(1);
-    }).then(page => {
-      const viewport = page.getViewport({ scale: 1 });
-      // render lebar penuh container, *2 untuk retina
-      const wrap = canvas.closest('.cert-canvas-wrap');
-      const w = (wrap ? wrap.offsetWidth : 200) || 200;
-      const scale = (w / viewport.width) * 2;
-      const scaled = page.getViewport({ scale });
-
-      canvas.width = scaled.width;
-      canvas.height = scaled.height;
-
-      page.render({
-        canvasContext: canvas.getContext('2d'),
-        viewport: scaled,
-      });
-    }).catch(() => {
-      const wrap = canvas.closest('.cert-canvas-wrap');
-      if (wrap) wrap.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div>`;
-    });
-
-    // Klik area preview buka PDF
-    wrapper.addEventListener('click', () => window.open(link, '_blank', 'noopener'));
-  });
-}
-
-initCertThumbnails();
+// ============ PROJECT PREVIEW — klik stack buka lightbox ============
 document.querySelectorAll('.project-preview[data-gallery]').forEach(preview => {
   preview.style.cursor = 'pointer';
   preview.addEventListener('click', () => {
@@ -364,91 +307,93 @@ document.querySelectorAll('.project-preview[data-gallery]').forEach(preview => {
   });
 });
 
+// ============ PDF THUMBNAIL (sertifikat) ============
+function initCertThumbnails() {
+  const certs = [
+    {
+      canvasId: 'certCanvas1',
+      wrapperId: 'certThumb1',
+      pdf:  'assets/certificates/sertifikat_c959aaab-56d9-42dc-81b4-6045e7850e27 (1).pdf',
+      link: 'assets/certificates/sertifikat_c959aaab-56d9-42dc-81b4-6045e7850e27 (1).pdf',
+    },
+  ];
+
+  if (typeof pdfjsLib === 'undefined') return;
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+  certs.forEach(({ canvasId, wrapperId, pdf, link }) => {
+    const canvas  = document.getElementById(canvasId);
+    const wrapper = document.getElementById(wrapperId);
+    if (!canvas || !wrapper) return;
+
+    pdfjsLib.getDocument(pdf).promise
+      .then(doc => doc.getPage(1))
+      .then(page => {
+        const viewport = page.getViewport({ scale: 1 });
+        const wrap  = canvas.closest('.cert-canvas-wrap');
+        const w     = (wrap ? wrap.offsetWidth : 200) || 200;
+        const scale = (w / viewport.width) * 2;
+        const scaled = page.getViewport({ scale });
+        canvas.width  = scaled.width;
+        canvas.height = scaled.height;
+        page.render({ canvasContext: canvas.getContext('2d'), viewport: scaled });
+      })
+      .catch(() => {
+        const wrap = canvas.closest('.cert-canvas-wrap');
+        if (wrap) wrap.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted)"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div>`;
+      });
+
+    wrapper.addEventListener('click', () => window.open(link, '_blank', 'noopener'));
+  });
+}
+
+initCertThumbnails();
+
 // ============ FADE-IN ON SCROLL ============
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
 const observer = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) e.target.classList.add('visible');
-  });
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
 }, { threshold: 0.1 });
 
-if (prefersReducedMotion) {
-  document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible'));
-} else {
-  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
-}
+if (prefersReducedMotion) document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible'));
+else document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 
 // ============ TYPING ANIMATION — HERO ROLE ============
 function initTypingAnimation() {
   const el = document.getElementById('heroRole');
   if (!el) return;
-
-  const roles = [
-    'IT Staff HRIS',
-    'Software Developer',
-    'Mobile App Developer',
-    'Embedded Systems Engineer',
-  ];
-
+  const roles = ['IT Staff HRIS', 'Software Developer', 'Mobile App Developer', 'Embedded Systems Engineer'];
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (prefersReduced) { el.textContent = roles[0]; return; }
 
-  if (prefersReduced) {
-    el.textContent = roles[0];
-    return;
-  }
-
-  let roleIndex = 0;
-  let charIndex = 0;
-  let isDeleting = false;
-  const typeSpeed = 80;
-  const deleteSpeed = 45;
-  const pauseAfterType = 1800;
-  const pauseAfterDelete = 400;
-
+  let roleIndex = 0, charIndex = 0, isDeleting = false;
   function tick() {
     const current = roles[roleIndex];
-
     if (!isDeleting) {
       el.textContent = current.slice(0, charIndex + 1);
       charIndex++;
-      if (charIndex === current.length) {
-        isDeleting = true;
-        setTimeout(tick, pauseAfterType);
-        return;
-      }
-      setTimeout(tick, typeSpeed);
+      if (charIndex === current.length) { isDeleting = true; setTimeout(tick, 1800); return; }
+      setTimeout(tick, 80);
     } else {
       el.textContent = current.slice(0, charIndex - 1);
       charIndex--;
-      if (charIndex === 0) {
-        isDeleting = false;
-        roleIndex = (roleIndex + 1) % roles.length;
-        setTimeout(tick, pauseAfterDelete);
-        return;
-      }
-      setTimeout(tick, deleteSpeed);
+      if (charIndex === 0) { isDeleting = false; roleIndex = (roleIndex + 1) % roles.length; setTimeout(tick, 400); return; }
+      setTimeout(tick, 45);
     }
   }
-
   tick();
 }
-
 initTypingAnimation();
 
-// ============ SMOOTH SCROLL — offset untuk floating navbar ============
+// ============ SMOOTH SCROLL ============
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   anchor.addEventListener('click', function (e) {
     const targetId = this.getAttribute('href');
     if (targetId === '#') return;
     const target = document.querySelector(targetId);
     if (!target) return;
-
     e.preventDefault();
-
-    const navbarHeight = 0; // tinggi pill + buffer supaya section tidak ketutup navbar
-    const targetTop = target.getBoundingClientRect().top + window.scrollY - navbarHeight;
-
-    window.scrollTo({ top: targetTop, behavior: 'smooth' });
+    window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY, behavior: 'smooth' });
   });
 });
