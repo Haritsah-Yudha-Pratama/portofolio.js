@@ -1,4 +1,10 @@
 // ============ NAVBAR PROGRESS BAR ============
+// Auto-update tahun
+const _year = new Date().getFullYear();
+const _heroYear = document.getElementById('heroYear');
+const _footerYear = document.getElementById('footerYear');
+if (_heroYear) _heroYear.textContent = _year;
+if (_footerYear) _footerYear.textContent = _year;
 function updateProgressBar() {
   const navbar = document.getElementById('navbar');
   const progressBar = document.getElementById('navProgress');
@@ -92,6 +98,27 @@ function initMobileMenu() {
 }
 
 initMobileMenu();
+
+// ── Mobile theme toggle ──
+function syncMobileThemeBtn(isDark) {
+  const moonM  = document.querySelector('.icon-moon-m');
+  const sunM   = document.querySelector('.icon-sun-m');
+  const label  = document.querySelector('.mobile-theme-label');
+  if (moonM)  moonM.style.display  = isDark ? 'none'  : 'block';
+  if (sunM)   sunM.style.display   = isDark ? 'block' : 'none';
+  if (label)  label.textContent    = isDark ? 'Light Mode' : 'Dark Mode';
+}
+
+const mobileThemeBtn = document.getElementById('mobileThemeToggle');
+if (mobileThemeBtn) {
+  syncMobileThemeBtn(document.documentElement.classList.contains('dark-mode'));
+  mobileThemeBtn.addEventListener('click', () => {
+    const isDark = document.documentElement.classList.toggle('dark-mode');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    updateThemeIcon(isDark, true);
+    syncMobileThemeBtn(isDark);
+  });
+}
 
 // ============ SKILL BAR ANIMATION + TOOLTIP ============
 function initSkillBars() {

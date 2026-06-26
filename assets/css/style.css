@@ -264,6 +264,9 @@ html.dark-mode .dot-red { background: #ef4444; } html.dark-mode .dot-yellow { ba
 .edu-card { background: var(--bg); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; display: flex; gap: 1.25rem; align-items: flex-start; }
 .edu-icon { width: 48px; height: 48px; border-radius: 12px; background: var(--accent-light); display: flex; align-items: center; justify-content: center; color: var(--accent2); flex-shrink: 0; overflow: hidden; }
 .edu-logo-img { width: 100%; height: 100%; object-fit: contain; padding: 6px; }
+/* edu-content = wrapper teks di dalam edu-card */
+.edu-content { display: flex; flex-direction: column; flex: 1; }
+
 .edu-period { font-size: 0.76rem; color: var(--accent2); font-weight: 500; margin-bottom: 0.35rem; background: var(--accent-light); display: inline-block; padding: 0.1rem 0.6rem; border-radius: 4px; }
 .edu-degree { font-weight: 600; font-size: 1rem; color: var(--accent); margin-bottom: 0.2rem; }
 .edu-school { font-size: 0.875rem; color: var(--muted); margin-bottom: 0.75rem; }
@@ -379,7 +382,7 @@ html.dark-mode footer { background: #020d1a; border-top-color: rgba(255,255,255,
   #hero { padding-top: 72px; min-height: 100svh; }
   .hero-split { grid-template-columns: 1fr; gap: 2rem; text-align: center; }
   .hero-photo-wrap { order: -1; }
-  .hero-photo { width: 160px; height: 160px; border-radius: 18px; margin: 0 auto; }
+  .hero-photo { width: 160px; height: 210px; border-radius: 18px; margin: 0 auto; }
   .hero-title { font-size: clamp(2rem,8vw,2.8rem); }
   .hero-role { display: inline-block; font-size: 0.875rem; }
   .hero-desc { font-size: 0.925rem; max-width: 100%; margin-left: auto; margin-right: auto; }
@@ -403,7 +406,7 @@ html.dark-mode footer { background: #020d1a; border-top-color: rgba(255,255,255,
 @media (max-width: 480px) {
   section { padding: 3.5rem 1rem; }
   section[id] { scroll-margin-top: 70px; }
-  .hero-photo { width: 130px; height: 130px; border-radius: 16px; }
+  .hero-photo { width: 130px; height: 170px; border-radius: 16px; }
   .hero-title { font-size: clamp(1.8rem,9vw,2.4rem); }
   .hero-actions { flex-direction: column; align-items: stretch; }
   .hero-cta, .hero-cta-outline { width: 100%; justify-content: center; }

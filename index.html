@@ -11,16 +11,18 @@
   <meta property="og:description" content="Fresh Graduate Software Developer & IT Support. Building clean, functional digital experiences." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://haritsah-yudha-pratama-portofolio.vercel.app/" />
-  <meta name="twitter:card" content="summary" />
+  <meta property="og:image" content="https://haritsah-yudha-pratama-portofolio.vercel.app/assets/img/haritsah-yudha-pratama-portofolio.vercel.app_.png" />
+  <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Haritsah Yudha Pratama | Software Developer & IT Support" />
   <meta name="twitter:description" content="Fresh Graduate Software Developer & IT Support from Universitas Andalas." />
+  <meta name="twitter:image" content="https://haritsah-yudha-pratama-portofolio.vercel.app/assets/img/haritsah-yudha-pratama-portofolio.vercel.app_.png" />
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
   <link rel="icon" href="assets/icon-512x512.png" type="image/png" sizes="512x512" />
   <link rel="apple-touch-icon" href="assets/icon-512x512.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css?v=7">
+  <link rel="stylesheet" href="assets/css/style.css?v=10">
 </head>
 
 <body>
@@ -89,11 +91,11 @@
       <div class="hero-split">
         <div class="hero-photo-wrap">
           <div class="hero-photo">
-            <img src="assets/img/DSCF0111.JPG" alt="Haritsah Yudha Pratama">
+            <img src="assets/img/DSCF0111.JPG" alt="Haritsah Yudha Pratama" fetchpriority="high">
           </div>
         </div>
         <div class="hero-content">
-          <p class="hero-label">Portfolio — 2026</p>
+          <p class="hero-label">Portfolio — <span id="heroYear"></span></p>
           <div class="hero-available">
             <span class="hero-available-dot"></span>
             Available for work
@@ -359,7 +361,7 @@
     </div>
   </section>
 
-  <footer><p>© 2026 Haritsah Yudha Pratama.</p></footer>
+  <footer><p>© <span id="footerYear"></span> Haritsah Yudha Pratama.</p></footer>
 
   <!-- LIGHTBOX -->
   <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Screenshot viewer">
@@ -392,7 +394,7 @@
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-  <script src="assets/js/main.js?v=4"></script>
+  <script src="assets/js/main.js?v=6"></script>
 
 </body>
 </html>
