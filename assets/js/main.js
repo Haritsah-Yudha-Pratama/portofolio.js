@@ -20,6 +20,7 @@ window.addEventListener('scroll', updateProgressBar, { passive: true });
 function updateActiveLink() {
   const sections = document.querySelectorAll('section[id]');
   const links = document.querySelectorAll('.nav-links a');
+  const mobileLinks = document.querySelectorAll('.mobile-link[href^="#"]');
   const isAtBottom = (window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight - 10;
   let current = '';
   if (isAtBottom) {
@@ -33,8 +34,13 @@ function updateActiveLink() {
     link.classList.remove('active');
     if (link.getAttribute('href') === '#' + current) link.classList.add('active');
   });
+  mobileLinks.forEach(link => {
+    link.classList.remove('active');
+    if (link.getAttribute('href') === '#' + current) link.classList.add('active');
+  });
 }
 window.addEventListener('scroll', updateActiveLink, { passive: true });
+updateActiveLink();
 
 // ============ DARK MODE TOGGLE ============
 function initDarkMode() {
@@ -224,7 +230,7 @@ function initLightbox() {
   const closeBtn    = document.getElementById('lightboxClose');
   const prevBtn     = document.getElementById('lightboxPrev');
   const nextBtn     = document.getElementById('lightboxNext');
-  const frame       = document.querySelector('.lightbox-frame');
+  const frame       = lightbox.querySelector('.lightbox-frame');
 
   if (!lightbox) return;
 
@@ -260,7 +266,12 @@ function initLightbox() {
     void img.offsetWidth;
     img.classList.add(direction === 'prev' ? 'anim-prev' : 'anim-next');
 
-    if (loader) loader.classList.remove('hidden');
+    // Cek apakah gambar sudah di-cache browser — kalau iya skip loader supaya tidak berkedip
+    const preCheck = new Image();
+    preCheck.src = item.src;
+    const alreadyCached = preCheck.complete;
+    if (loader && !alreadyCached) loader.classList.remove('hidden');
+
     img.src = item.src;
     caption.textContent = item.caption || '';
     counter.textContent = (currentIndex + 1) + ' / ' + currentGallery.length;

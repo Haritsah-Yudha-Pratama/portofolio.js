@@ -111,11 +111,11 @@ html.dark-mode .mobile-cv-btn:hover { background: #38bdf8; }
   display: none; position: fixed; top: 68px; left: 12px; right: 12px;
   background: var(--pill-bg); border: 1px solid var(--pill-border); border-radius: 20px;
   backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); box-shadow: var(--pill-shadow);
-  z-index: 490; overflow: hidden; pointer-events: all;
+  z-index: 490; overflow: hidden; pointer-events: none;
   transform: translateY(-10px) scale(0.98); opacity: 0;
   transition: opacity 0.25s ease, transform 0.25s ease; transform-origin: top center;
 }
-.nav-mobile-menu.open { opacity: 1; transform: translateY(0) scale(1); }
+.nav-mobile-menu.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: all; }
 .nav-mobile-menu ul { list-style: none; padding: 6px 0; }
 .mobile-link { display: flex; align-items: center; padding: 14px 22px; font-size: 0.95rem; color: var(--muted); text-decoration: none; font-weight: 500; transition: background 0.15s, color 0.15s; gap: 10px; }
 .mobile-link:hover { background: var(--accent-light); color: var(--accent2); }
@@ -368,13 +368,22 @@ html.dark-mode footer { background: #020d1a; border-top-color: rgba(255,255,255,
 
 .lightbox-stage { flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 14px 12px; min-height: 0; overflow: hidden; }
 .lightbox-frame { flex: 1; height: 100%; max-height: 100%; background: rgba(0,0,0,0.35); border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; border: 1px solid rgba(255,255,255,0.08); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); }
-.lightbox-img-wrap { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
-#lightboxImg { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; display: block; position: relative; will-change: transform, opacity; }
+.lightbox-img-wrap { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; perspective: 1200px; }
+#lightboxImg { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; display: block; position: relative; will-change: transform, opacity; border-radius: 6px; box-shadow: 0 12px 32px rgba(0,0,0,0.35); }
 
-@keyframes slide-in-right { from { opacity: 0; transform: translateX(48px); } to { opacity: 1; transform: translateX(0); } }
-@keyframes slide-in-left  { from { opacity: 0; transform: translateX(-48px); } to { opacity: 1; transform: translateX(0); } }
-#lightboxImg.anim-next { animation: slide-in-right 0.3s cubic-bezier(0.25,0.46,0.45,0.94) forwards; }
-#lightboxImg.anim-prev { animation: slide-in-left  0.3s cubic-bezier(0.25,0.46,0.45,0.94) forwards; }
+/* ── Card shuffle effect ── */
+@keyframes card-in-next {
+  0%   { opacity: 0; transform: translateX(60px) scale(0.82) rotateY(-8deg); }
+  60%  { opacity: 1; }
+  100% { opacity: 1; transform: translateX(0) scale(1) rotateY(0deg); }
+}
+@keyframes card-in-prev {
+  0%   { opacity: 0; transform: translateX(-60px) scale(0.82) rotateY(8deg); }
+  60%  { opacity: 1; }
+  100% { opacity: 1; transform: translateX(0) scale(1) rotateY(0deg); }
+}
+#lightboxImg.anim-next { animation: card-in-next 0.32s cubic-bezier(0.22,1,0.36,1) forwards; }
+#lightboxImg.anim-prev { animation: card-in-prev  0.32s cubic-bezier(0.22,1,0.36,1) forwards; }
 
 .lightbox-loader { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; opacity: 1; transition: opacity 0.2s; z-index: 2; }
 .lightbox-loader::after { content: ''; width: 26px; height: 26px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.08); border-top-color: rgba(255,255,255,0.45); animation: lb-spin 0.7s linear infinite; }
