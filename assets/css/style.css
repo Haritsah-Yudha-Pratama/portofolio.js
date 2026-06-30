@@ -302,7 +302,17 @@ html.dark-mode .dot-red { background: #ef4444; } html.dark-mode .dot-yellow { ba
 .cert-view-btn:hover { text-decoration: underline; }
 
 .cert-viewer-canvas-wrap { user-select: none; -webkit-user-select: none; }
-.cert-viewer-canvas-wrap canvas { max-width: 100%; max-height: 100%; pointer-events: none; }
+.cert-viewer-canvas-wrap canvas {
+  max-width: 100%; max-height: 100%; pointer-events: none;
+  opacity: 0; transform: scale(0.92);
+}
+.cert-viewer-canvas-wrap canvas.cert-revealed {
+  animation: cert-reveal 0.5s cubic-bezier(0.22,1,0.36,1) forwards;
+}
+@keyframes cert-reveal {
+  from { opacity: 0; transform: scale(0.92) translateY(8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
 
 /* ── CONTACT ── */
 #contact { background: #1a3a5c; text-align: center; transition: background 0.3s; }

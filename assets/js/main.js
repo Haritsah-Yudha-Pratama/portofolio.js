@@ -341,7 +341,7 @@ function initCertThumbnails() {
       canvasId: 'certCanvas1',
       wrapperId: 'certThumb1',
       pdf:  'assets/certificates/sertifikat_c959aaab-56d9-42dc-81b4-6045e7850e27 (1).pdf',
-      link: 'assets/certificates/sertifikat_c959aaab-56d9-42dc-81b4-6045e7850e27 (1).pdf',
+      viewKey: 'cert1',
     },
   ];
 
@@ -349,7 +349,7 @@ function initCertThumbnails() {
   pdfjsLib.GlobalWorkerOptions.workerSrc =
     'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-  certs.forEach(({ canvasId, wrapperId, pdf, link }) => {
+  certs.forEach(({ canvasId, wrapperId, pdf, viewKey }) => {
     const canvas  = document.getElementById(canvasId);
     const wrapper = document.getElementById(wrapperId);
     if (!canvas || !wrapper) return;
@@ -371,7 +371,12 @@ function initCertThumbnails() {
         if (wrap) wrap.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted)"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div>`;
       });
 
-    wrapper.addEventListener('click', () => window.open(link, '_blank', 'noopener'));
+    // Klik thumbnail buka cert viewer (render canvas), BUKAN link PDF langsung
+    wrapper.style.cursor = 'pointer';
+    wrapper.addEventListener('click', () => {
+      const trigger = document.querySelector(`[data-cert-view="${viewKey}"]`);
+      if (trigger) trigger.click();
+    });
   });
 }
 
@@ -395,6 +400,7 @@ function initCertViewer() {
     const pdfPath = certPdfMap[certKey];
     if (!pdfPath || typeof pdfjsLib === 'undefined') return;
 
+    canvas.classList.remove('cert-revealed');
     loader.classList.remove('hidden');
     viewer.classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -410,7 +416,11 @@ function initCertViewer() {
         canvas.height = scaled.height;
         return page.render({ canvasContext: canvas.getContext('2d'), viewport: scaled }).promise;
       })
-      .then(() => loader.classList.add('hidden'))
+      .then(() => {
+        loader.classList.add('hidden');
+        // trigger animasi reveal setelah render selesai
+        requestAnimationFrame(() => canvas.classList.add('cert-revealed'));
+      })
       .catch(() => loader.classList.add('hidden'));
   }
 
