@@ -377,6 +377,65 @@ function initCertThumbnails() {
 
 initCertThumbnails();
 
+// ============ CERT VIEWER (lihat-saja, tanpa link download) ============
+function initCertViewer() {
+  const certPdfMap = {
+    cert1: 'assets/certificates/sertifikat_c959aaab-56d9-42dc-81b4-6045e7850e27 (1).pdf',
+  };
+
+  const viewer   = document.getElementById('certViewer');
+  const canvas   = document.getElementById('certViewerCanvas');
+  const wrap     = document.getElementById('certViewerCanvasWrap');
+  const loader   = document.getElementById('certViewerLoader');
+  const closeBtn = document.getElementById('certViewerClose');
+
+  if (!viewer || !canvas) return;
+
+  function open(certKey) {
+    const pdfPath = certPdfMap[certKey];
+    if (!pdfPath || typeof pdfjsLib === 'undefined') return;
+
+    loader.classList.remove('hidden');
+    viewer.classList.add('open');
+    document.body.style.overflow = 'hidden';
+
+    pdfjsLib.getDocument(pdfPath).promise
+      .then(doc => doc.getPage(1))
+      .then(page => {
+        const viewport = page.getViewport({ scale: 1 });
+        const targetW = Math.min(wrap.clientWidth || 800, 900);
+        const scale = (targetW / viewport.width) * 2; // retina
+        const scaled = page.getViewport({ scale });
+        canvas.width = scaled.width;
+        canvas.height = scaled.height;
+        return page.render({ canvasContext: canvas.getContext('2d'), viewport: scaled }).promise;
+      })
+      .then(() => loader.classList.add('hidden'))
+      .catch(() => loader.classList.add('hidden'));
+  }
+
+  function close() {
+    viewer.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  document.querySelectorAll('[data-cert-view]').forEach(btn => {
+    btn.addEventListener('click', () => open(btn.getAttribute('data-cert-view')));
+  });
+
+  closeBtn.addEventListener('click', close);
+  viewer.addEventListener('click', (e) => { if (e.target === viewer) close(); });
+  document.addEventListener('keydown', (e) => {
+    if (viewer.classList.contains('open') && e.key === 'Escape') close();
+  });
+
+  // Blokir klik kanan & drag pada canvas supaya tidak mudah di-save
+  canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+  canvas.addEventListener('dragstart', (e) => e.preventDefault());
+}
+
+initCertViewer();
+
 // ============ FADE-IN ON SCROLL ============
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const observer = new IntersectionObserver((entries) => {

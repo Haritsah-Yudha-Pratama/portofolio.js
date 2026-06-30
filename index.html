@@ -28,7 +28,7 @@
   <link
     href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css?v=10">
+  <link rel="stylesheet" href="assets/css/style.css?v=11">
 </head>
 
 <body>
@@ -546,16 +546,10 @@
             <div class="cert-badge"><span class="cert-pill">Staf TI (HRIS)</span><span class="cert-pill">Predikat Sangat
                 Baik</span></div>
             <div style="margin-top:0.65rem">
-              <a href="assets/certificates/sertifikat_c959aaab-56d9-42dc-81b4-6045e7850e27 (1).pdf" target="_blank"
-                rel="noopener"
-                style="font-size:0.72rem;color:var(--accent2);text-decoration:none;display:inline-flex;align-items:center;gap:4px;">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                  stroke-linecap="round">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                  <path d="M14 2v6h6" />
-                </svg>
+              <button type="button" class="cert-view-btn" data-cert-view="cert1">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                 Lihat Sertifikat
-              </a>
+              </button>
             </div>
           </div>
         </div>
@@ -586,7 +580,30 @@
     <p>© <span id="footerYear"></span> Haritsah Yudha Pratama.</p>
   </footer>
 
-  <!-- LIGHTBOX -->
+  <!-- CERT VIEWER (read-only, no download) -->
+  <div class="lightbox" id="certViewer" role="dialog" aria-modal="true" aria-label="Cert viewer">
+    <div class="lightbox-modal">
+      <div class="lightbox-header">
+        <div class="lightbox-header-left">
+          <div class="lightbox-header-dots"><span class="lh-dot dot-red"></span><span class="lh-dot dot-yellow"></span><span class="lh-dot dot-green"></span></div>
+          <span class="lightbox-project-name">Sertifikat — Lihat Saja (Hanya Tampilan)</span>
+        </div>
+        <div class="lightbox-header-right">
+          <button class="lightbox-close" id="certViewerClose" aria-label="Tutup">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="lightbox-stage">
+        <div class="lightbox-frame">
+          <div class="lightbox-img-wrap cert-viewer-canvas-wrap" id="certViewerCanvasWrap">
+            <canvas id="certViewerCanvas"></canvas>
+          </div>
+          <div class="lightbox-loader" id="certViewerLoader"></div>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Screenshot viewer">
     <div class="lightbox-modal">
       <div class="lightbox-header">
@@ -627,7 +644,7 @@
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-  <script src="assets/js/main.js?v=6"></script>
+  <script src="assets/js/main.js?v=7"></script>
 
 </body>
 

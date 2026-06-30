@@ -294,6 +294,16 @@ html.dark-mode .dot-red { background: #ef4444; } html.dark-mode .dot-yellow { ba
 .cert-badge { display: flex; flex-wrap: wrap; gap: 0.35rem; }
 .cert-pill { font-size: 0.7rem; color: var(--accent2); background: var(--accent-light); border: 1px solid var(--accent-light); padding: 0.15rem 0.5rem; border-radius: 5px; font-weight: 500; }
 
+.cert-view-btn {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: none; border: none; color: var(--accent2);
+  font-size: 0.72rem; font-weight: 500; cursor: pointer; padding: 0;
+}
+.cert-view-btn:hover { text-decoration: underline; }
+
+.cert-viewer-canvas-wrap { user-select: none; -webkit-user-select: none; }
+.cert-viewer-canvas-wrap canvas { max-width: 100%; max-height: 100%; pointer-events: none; }
+
 /* ── CONTACT ── */
 #contact { background: #1a3a5c; text-align: center; transition: background 0.3s; }
 html.dark-mode #contact { background: #0c1e30; }
