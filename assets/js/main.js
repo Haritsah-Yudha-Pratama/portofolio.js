@@ -237,6 +237,37 @@ function initLightbox() {
   let currentGallery = [];
   let currentIndex = 0;
 
+  // ─ Zoom state ─
+  let zScale = 1, zPanX = 0, zPanY = 0;
+  const ZOOM_MAX = 4, ZOOM_MIN = 1;
+
+  function applyZoom(animated) {
+    img.style.transition = animated
+      ? 'transform 0.3s cubic-bezier(0.22,1,0.36,1)'
+      : 'none';
+    img.style.transform = `translate(${zPanX}px, ${zPanY}px) scale(${zScale})`;
+  }
+
+  function resetZoom() {
+    zScale = 1; zPanX = 0; zPanY = 0;
+    img.style.transition = 'none';
+    img.style.transform = 'none';
+    img.classList.remove('anim-next', 'anim-prev');
+  }
+
+  function clampPan() {
+    if (zScale <= 1) { zPanX = 0; zPanY = 0; return; }
+    const fw = frame ? frame.clientWidth  : 300;
+    const fh = frame ? frame.clientHeight : 300;
+    const iw = img.clientWidth  * zScale;
+    const ih = img.clientHeight * zScale;
+    const maxX = Math.max(0, (iw - fw) / 2);
+    const maxY = Math.max(0, (ih - fh) / 2);
+    zPanX = Math.max(-maxX, Math.min(maxX, zPanX));
+    zPanY = Math.max(-maxY, Math.min(maxY, zPanY));
+  }
+
+  // ─ Thumbnails ─
   function buildThumbs() {
     thumbsEl.innerHTML = '';
     currentGallery.forEach((item, i) => {
@@ -257,8 +288,10 @@ function initLightbox() {
     if (thumbs[index]) thumbs[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
   }
 
+  // ─ Show (ganti gambar) ─
   function show(index, direction) {
     if (!currentGallery.length) return;
+    resetZoom();
     currentIndex = (index + currentGallery.length) % currentGallery.length;
     const item = currentGallery[currentIndex];
 
@@ -266,21 +299,23 @@ function initLightbox() {
     void img.offsetWidth;
     img.classList.add(direction === 'prev' ? 'anim-prev' : 'anim-next');
 
-    // Cek apakah gambar sudah di-cache browser — kalau iya skip loader supaya tidak berkedip
+    // Hapus class animasi setelah selesai supaya tidak konflik dengan zoom transform
+    img.addEventListener('animationend', () => {
+      img.classList.remove('anim-next', 'anim-prev');
+    }, { once: true });
+
     const preCheck = new Image();
     preCheck.src = item.src;
-    const alreadyCached = preCheck.complete;
-    if (loader && !alreadyCached) loader.classList.remove('hidden');
+    if (loader && !preCheck.complete) loader.classList.remove('hidden');
 
     img.src = item.src;
     caption.textContent = item.caption || '';
     counter.textContent = (currentIndex + 1) + ' / ' + currentGallery.length;
-
     thumbsEl.querySelectorAll('.lb-thumb').forEach((t, i) => t.classList.toggle('active', i === currentIndex));
     scrollThumbIntoView(currentIndex);
   }
 
-  img.addEventListener('load', () => { if (loader) loader.classList.add('hidden'); });
+  img.addEventListener('load',  () => { if (loader) loader.classList.add('hidden'); });
   img.addEventListener('error', () => { if (loader) loader.classList.add('hidden'); });
 
   function open(galleryKey, startIndex) {
@@ -294,6 +329,7 @@ function initLightbox() {
   }
 
   function close() {
+    resetZoom();
     lightbox.classList.remove('open');
     document.body.style.overflow = '';
   }
@@ -305,9 +341,7 @@ function initLightbox() {
   closeBtn.addEventListener('click', close);
   prevBtn.addEventListener('click', () => show(currentIndex - 1, 'prev'));
   nextBtn.addEventListener('click', () => show(currentIndex + 1, 'next'));
-
   lightbox.addEventListener('click', (e) => { if (e.target === lightbox) close(); });
-
   document.addEventListener('keydown', (e) => {
     if (!lightbox.classList.contains('open')) return;
     if (e.key === 'Escape') close();
@@ -315,125 +349,102 @@ function initLightbox() {
     if (e.key === 'ArrowRight') show(currentIndex + 1, 'next');
   });
 
-  // ---- Swipe kiri/kanan + Pinch zoom + Double-tap zoom (mobile) ----
-  if (frame) {
-    let touchStartX = 0, touchStartY = 0;
+  // ── Touch: pinch zoom + double-tap + swipe ──
+  if (!frame) return;
 
-    // Zoom state
-    let scale = 1, minScale = 1, maxScale = 4;
-    let originX = 0, originY = 0;   // transform-origin dalam px relatif ke img
-    let panX = 0, panY = 0;         // pan offset
-    let lastTapTime = 0;
+  let t1x = 0, t1y = 0;          // touch start single-finger
+  let lastTap = 0;               // double-tap timing
+  let pinching = false;          // sedang pinch?
+  let pinchDist0 = 0;            // jarak awal 2 jari
+  let pinchScale0 = 1;           // scale saat pinch mulai
+  let pinchPanX0 = 0, pinchPanY0 = 0; // pan saat pinch mulai
 
-    function applyTransform(animated) {
-      img.style.transition = animated ? 'transform 0.3s cubic-bezier(0.22,1,0.36,1)' : 'none';
-      img.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
-    }
+  frame.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 1) {
+      pinching = false;
+      t1x = e.touches[0].clientX;
+      t1y = e.touches[0].clientY;
 
-    function resetZoom(animated) {
-      scale = 1; panX = 0; panY = 0;
-      applyTransform(animated);
-    }
-
-    function clampPan() {
-      if (scale <= 1) { panX = 0; panY = 0; return; }
-      const maxPanX = (img.naturalWidth  * scale - frame.clientWidth)  / 2;
-      const maxPanY = (img.naturalHeight * scale - frame.clientHeight) / 2;
-      panX = Math.max(-maxPanX, Math.min(maxPanX, panX));
-      panY = Math.max(-maxPanY, Math.min(maxPanY, panY));
-    }
-
-    // Reset zoom tiap ganti gambar
-    const _origShow = show;
-    show = function(index, direction) {
-      resetZoom(false);
-      _origShow(index, direction);
-    };
-
-    // ---- Double-tap to zoom ----
-    frame.addEventListener('click', (e) => {
+      // double-tap detection
       const now = Date.now();
-      if (now - lastTapTime < 300) {
-        // double tap
-        if (scale > 1) {
-          resetZoom(true);
+      if (now - lastTap < 280) {
+        e.preventDefault();
+        if (zScale > 1) {
+          // zoom out ke normal
+          zScale = 1; zPanX = 0; zPanY = 0;
+          applyZoom(true);
         } else {
+          // zoom in ke titik yang di-tap
           const rect = img.getBoundingClientRect();
-          const tapX = e.clientX - rect.left - rect.width / 2;
-          const tapY = e.clientY - rect.top  - rect.height / 2;
-          scale = 2.5;
-          panX = -tapX * (scale - 1) / scale;
-          panY = -tapY * (scale - 1) / scale;
+          const tapX = t1x - rect.left - rect.width / 2;
+          const tapY = t1y - rect.top  - rect.height / 2;
+          zScale = 2.5;
+          zPanX = -(tapX * (zScale - 1)) / zScale;
+          zPanY = -(tapY * (zScale - 1)) / zScale;
           clampPan();
-          applyTransform(true);
+          applyZoom(true);
         }
       }
-      lastTapTime = now;
-    });
+      lastTap = now;
 
-    // ---- Pinch to zoom ----
-    let initDist = 0, initScale = 1;
-    let initMidX = 0, initMidY = 0, initPanX = 0, initPanY = 0;
+    } else if (e.touches.length === 2) {
+      e.preventDefault();
+      pinching = true;
+      const dx = e.touches[1].clientX - e.touches[0].clientX;
+      const dy = e.touches[1].clientY - e.touches[0].clientY;
+      pinchDist0  = Math.hypot(dx, dy);
+      pinchScale0 = zScale;
+      pinchPanX0  = zPanX;
+      pinchPanY0  = zPanY;
+    }
+  }, { passive: false });
 
-    frame.addEventListener('touchstart', (e) => {
-      if (e.touches.length === 1) {
-        touchStartX = e.touches[0].clientX;
-        touchStartY = e.touches[0].clientY;
-      } else if (e.touches.length === 2) {
-        e.preventDefault();
-        const dx = e.touches[1].clientX - e.touches[0].clientX;
-        const dy = e.touches[1].clientY - e.touches[0].clientY;
-        initDist  = Math.hypot(dx, dy);
-        initScale = scale;
-        initMidX  = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-        initMidY  = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-        initPanX  = panX;
-        initPanY  = panY;
+  frame.addEventListener('touchmove', (e) => {
+    e.preventDefault(); // blokir scroll halaman saat di dalam lightbox
+
+    if (e.touches.length === 2 && pinching) {
+      // pinch zoom
+      const dx = e.touches[1].clientX - e.touches[0].clientX;
+      const dy = e.touches[1].clientY - e.touches[0].clientY;
+      const dist = Math.hypot(dx, dy);
+      zScale = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, pinchScale0 * (dist / pinchDist0)));
+      zPanX = pinchPanX0;
+      zPanY = pinchPanY0;
+      clampPan();
+      applyZoom(false);
+
+    } else if (e.touches.length === 1 && !pinching && zScale > 1) {
+      // pan saat sedang zoom
+      const dx = e.touches[0].clientX - t1x;
+      const dy = e.touches[0].clientY - t1y;
+      zPanX += dx;
+      zPanY += dy;
+      t1x = e.touches[0].clientX;
+      t1y = e.touches[0].clientY;
+      clampPan();
+      applyZoom(false);
+    }
+  }, { passive: false });
+
+  frame.addEventListener('touchend', (e) => {
+    pinching = false;
+
+    // snap balik kalau scale hampir 1
+    if (zScale < 1.05) {
+      zScale = 1; zPanX = 0; zPanY = 0;
+      applyZoom(true);
+    }
+
+    // swipe kiri/kanan hanya kalau tidak zoom
+    if (zScale <= 1 && e.changedTouches.length === 1 && e.touches.length === 0) {
+      const dx = e.changedTouches[0].clientX - t1x;
+      const dy = e.changedTouches[0].clientY - t1y;
+      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+        if (dx < 0) show(currentIndex + 1, 'next');
+        else show(currentIndex - 1, 'prev');
       }
-    }, { passive: false });
-
-    frame.addEventListener('touchmove', (e) => {
-      if (e.touches.length === 2) {
-        e.preventDefault();
-        const dx = e.touches[1].clientX - e.touches[0].clientX;
-        const dy = e.touches[1].clientY - e.touches[0].clientY;
-        const dist = Math.hypot(dx, dy);
-        scale = Math.min(maxScale, Math.max(minScale, initScale * (dist / initDist)));
-
-        const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-        const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-        panX = initPanX + (midX - initMidX);
-        panY = initPanY + (midY - initMidY);
-        clampPan();
-        applyTransform(false);
-      } else if (e.touches.length === 1 && scale > 1) {
-        // pan saat sudah di-zoom
-        e.preventDefault();
-        const dx = e.touches[0].clientX - touchStartX;
-        const dy = e.touches[0].clientY - touchStartY;
-        panX += dx; panY += dy;
-        touchStartX = e.touches[0].clientX;
-        touchStartY = e.touches[0].clientY;
-        clampPan();
-        applyTransform(false);
-      }
-    }, { passive: false });
-
-    frame.addEventListener('touchend', (e) => {
-      if (e.touches.length === 0 && scale < 1.05) {
-        resetZoom(true);
-      }
-      // swipe kiri/kanan hanya kalau TIDAK sedang zoom
-      if (scale <= 1 && e.changedTouches.length === 1 && e.touches.length === 0) {
-        const dx = e.changedTouches[0].clientX - touchStartX;
-        const dy = e.changedTouches[0].clientY - touchStartY;
-        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
-          if (dx < 0) show(currentIndex + 1, 'next');
-          else show(currentIndex - 1, 'prev');
-        }
-      }
-    }, { passive: true });
-  }
+    }
+  }, { passive: true });
 }
 
 initLightbox();
