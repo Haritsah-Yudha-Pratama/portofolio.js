@@ -315,20 +315,121 @@ function initLightbox() {
     if (e.key === 'ArrowRight') show(currentIndex + 1, 'next');
   });
 
-  // ---- Swipe gesture mobile ----
+  // ---- Swipe kiri/kanan + Pinch zoom + Double-tap zoom (mobile) ----
   if (frame) {
-    let touchStartX = 0;
-    let touchStartY = 0;
+    let touchStartX = 0, touchStartY = 0;
+
+    // Zoom state
+    let scale = 1, minScale = 1, maxScale = 4;
+    let originX = 0, originY = 0;   // transform-origin dalam px relatif ke img
+    let panX = 0, panY = 0;         // pan offset
+    let lastTapTime = 0;
+
+    function applyTransform(animated) {
+      img.style.transition = animated ? 'transform 0.3s cubic-bezier(0.22,1,0.36,1)' : 'none';
+      img.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+    }
+
+    function resetZoom(animated) {
+      scale = 1; panX = 0; panY = 0;
+      applyTransform(animated);
+    }
+
+    function clampPan() {
+      if (scale <= 1) { panX = 0; panY = 0; return; }
+      const maxPanX = (img.naturalWidth  * scale - frame.clientWidth)  / 2;
+      const maxPanY = (img.naturalHeight * scale - frame.clientHeight) / 2;
+      panX = Math.max(-maxPanX, Math.min(maxPanX, panX));
+      panY = Math.max(-maxPanY, Math.min(maxPanY, panY));
+    }
+
+    // Reset zoom tiap ganti gambar
+    const _origShow = show;
+    show = function(index, direction) {
+      resetZoom(false);
+      _origShow(index, direction);
+    };
+
+    // ---- Double-tap to zoom ----
+    frame.addEventListener('click', (e) => {
+      const now = Date.now();
+      if (now - lastTapTime < 300) {
+        // double tap
+        if (scale > 1) {
+          resetZoom(true);
+        } else {
+          const rect = img.getBoundingClientRect();
+          const tapX = e.clientX - rect.left - rect.width / 2;
+          const tapY = e.clientY - rect.top  - rect.height / 2;
+          scale = 2.5;
+          panX = -tapX * (scale - 1) / scale;
+          panY = -tapY * (scale - 1) / scale;
+          clampPan();
+          applyTransform(true);
+        }
+      }
+      lastTapTime = now;
+    });
+
+    // ---- Pinch to zoom ----
+    let initDist = 0, initScale = 1;
+    let initMidX = 0, initMidY = 0, initPanX = 0, initPanY = 0;
+
     frame.addEventListener('touchstart', (e) => {
-      touchStartX = e.touches[0].clientX;
-      touchStartY = e.touches[0].clientY;
+      if (e.touches.length === 1) {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      } else if (e.touches.length === 2) {
+        const dx = e.touches[1].clientX - e.touches[0].clientX;
+        const dy = e.touches[1].clientY - e.touches[0].clientY;
+        initDist  = Math.hypot(dx, dy);
+        initScale = scale;
+        initMidX  = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+        initMidY  = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+        initPanX  = panX;
+        initPanY  = panY;
+      }
     }, { passive: true });
+
+    frame.addEventListener('touchmove', (e) => {
+      if (e.touches.length === 2) {
+        e.preventDefault();
+        const dx = e.touches[1].clientX - e.touches[0].clientX;
+        const dy = e.touches[1].clientY - e.touches[0].clientY;
+        const dist = Math.hypot(dx, dy);
+        scale = Math.min(maxScale, Math.max(minScale, initScale * (dist / initDist)));
+
+        const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+        const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+        panX = initPanX + (midX - initMidX);
+        panY = initPanY + (midY - initMidY);
+        clampPan();
+        applyTransform(false);
+      } else if (e.touches.length === 1 && scale > 1) {
+        // pan saat sudah di-zoom
+        e.preventDefault();
+        const dx = e.touches[0].clientX - touchStartX;
+        const dy = e.touches[0].clientY - touchStartY;
+        panX += dx; panY += dy;
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+        clampPan();
+        applyTransform(false);
+      }
+    }, { passive: false });
+
     frame.addEventListener('touchend', (e) => {
-      const dx = e.changedTouches[0].clientX - touchStartX;
-      const dy = e.changedTouches[0].clientY - touchStartY;
-      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
-        if (dx < 0) show(currentIndex + 1, 'next');
-        else show(currentIndex - 1, 'prev');
+      if (e.touches.length === 0 && scale < 1.05) {
+        resetZoom(true);
+      }
+      // swipe kiri/kanan hanya kalau TIDAK sedang zoom
+      if (scale <= 1 && e.changedTouches.length === 1 && e.touches.length === 0) {
+        const dx = e.changedTouches[0].clientX - touchStartX;
+        const dy = e.changedTouches[0].clientY - touchStartY;
+        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+          if (dx < 0) show(currentIndex + 1, 'next');
+          else show(currentIndex - 1, 'prev');
+        }
       }
     }, { passive: true });
   }
