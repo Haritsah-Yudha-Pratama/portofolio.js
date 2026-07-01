@@ -380,6 +380,7 @@ function initLightbox() {
         touchStartX = e.touches[0].clientX;
         touchStartY = e.touches[0].clientY;
       } else if (e.touches.length === 2) {
+        e.preventDefault();
         const dx = e.touches[1].clientX - e.touches[0].clientX;
         const dy = e.touches[1].clientY - e.touches[0].clientY;
         initDist  = Math.hypot(dx, dy);
@@ -389,7 +390,7 @@ function initLightbox() {
         initPanX  = panX;
         initPanY  = panY;
       }
-    }, { passive: true });
+    }, { passive: false });
 
     frame.addEventListener('touchmove', (e) => {
       if (e.touches.length === 2) {
