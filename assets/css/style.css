@@ -341,9 +341,9 @@ html.dark-mode #contact { background: #0c1e30; }
 .social-links a:hover { background: rgba(255,255,255,0.12); color: #fff; }
 
 /* ── SCROLL TO TOP ── */
-.scroll-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; border-radius: 50%; background: var(--accent); color: #fff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s, background 0.2s; z-index: 99; pointer-events: none; }
+.scroll-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; border-radius: 50%; background: var(--accent2); color: #fff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s, background 0.2s; z-index: 99; pointer-events: none; }
 .scroll-top.visible { opacity: 1; transform: translateY(0); pointer-events: all; }
-.scroll-top:hover { background: var(--accent2); }
+.scroll-top:hover { background: var(--accent); }
 
 /* ── FOOTER ── */
 footer { background: #0d2540; border-top: 1px solid rgba(255,255,255,0.07); padding: 1.75rem 1rem; text-align: center; font-size: 0.8rem; color: #5a7a9a; }
