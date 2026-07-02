@@ -248,13 +248,6 @@ function initLightbox() {
     img.style.transform = `translate(${zPanX}px, ${zPanY}px) scale(${zScale})`;
   }
 
-  function resetZoom() {
-    zScale = 1; zPanX = 0; zPanY = 0;
-    img.style.transition = 'none';
-    img.style.transform = 'none';
-    img.classList.remove('anim-next', 'anim-prev');
-  }
-
   function clampPan() {
     if (zScale <= 1) { zPanX = 0; zPanY = 0; return; }
     const fw = frame ? frame.clientWidth  : 300;
@@ -352,29 +345,63 @@ function initLightbox() {
   // ── Touch: pinch zoom + double-tap + swipe ──
   if (!frame) return;
 
-  let t1x = 0, t1y = 0;          // touch start single-finger
-  let lastTap = 0;               // double-tap timing
-  let pinching = false;          // sedang pinch?
-  let pinchDist0 = 0;            // jarak awal 2 jari
-  let pinchScale0 = 1;           // scale saat pinch mulai
-  let pinchPanX0 = 0, pinchPanY0 = 0; // pan saat pinch mulai
+  let t1x = 0, t1y = 0;
+  let lastTap = 0;
+  let pinching = false;
+  let pinchDist0 = 0, pinchScale0 = 1;
+  let pinchPanX0 = 0, pinchPanY0 = 0;
+  let rafId = null;
+  let pendingTransform = false;
+
+  // Pre-promote ke GPU layer saat lightbox dibuka
+  img.style.willChange = 'transform';
+
+  function scheduleApplyZoom() {
+    if (pendingTransform) return;
+    pendingTransform = true;
+    rafId = requestAnimationFrame(() => {
+      pendingTransform = false;
+      img.style.transition = 'none';
+      img.style.transform = `translate(${zPanX}px, ${zPanY}px) scale(${zScale})`;
+    });
+  }
+
+  function applyZoom(animated) {
+    if (rafId) cancelAnimationFrame(rafId);
+    pendingTransform = false;
+    if (animated) {
+      img.style.transition = 'transform 0.3s cubic-bezier(0.22,1,0.36,1)';
+      requestAnimationFrame(() => {
+        img.style.transform = `translate(${zPanX}px, ${zPanY}px) scale(${zScale})`;
+      });
+    } else {
+      scheduleApplyZoom();
+    }
+  }
+
+  function resetZoom() {
+    zScale = 1; zPanX = 0; zPanY = 0;
+    if (rafId) cancelAnimationFrame(rafId);
+    pendingTransform = false;
+    img.style.transition = 'none';
+    img.style.transform = 'none';
+    img.classList.remove('anim-next', 'anim-prev');
+  }
 
   frame.addEventListener('touchstart', (e) => {
     if (e.touches.length === 1) {
-      pinching = false;
       t1x = e.touches[0].clientX;
       t1y = e.touches[0].clientY;
+      pinching = false;
 
-      // double-tap detection
+      // double-tap
       const now = Date.now();
       if (now - lastTap < 280) {
         e.preventDefault();
         if (zScale > 1) {
-          // zoom out ke normal
           zScale = 1; zPanX = 0; zPanY = 0;
           applyZoom(true);
         } else {
-          // zoom in ke titik yang di-tap
           const rect = img.getBoundingClientRect();
           const tapX = t1x - rect.left - rect.width / 2;
           const tapY = t1y - rect.top  - rect.height / 2;
@@ -399,11 +426,10 @@ function initLightbox() {
     }
   }, { passive: false });
 
+  // touchmove PASSIVE supaya browser tidak block rendering
+  // kita kontrol scroll via touch-action: none di CSS
   frame.addEventListener('touchmove', (e) => {
-    e.preventDefault(); // blokir scroll halaman saat di dalam lightbox
-
     if (e.touches.length === 2 && pinching) {
-      // pinch zoom
       const dx = e.touches[1].clientX - e.touches[0].clientX;
       const dy = e.touches[1].clientY - e.touches[0].clientY;
       const dist = Math.hypot(dx, dy);
@@ -411,10 +437,8 @@ function initLightbox() {
       zPanX = pinchPanX0;
       zPanY = pinchPanY0;
       clampPan();
-      applyZoom(false);
-
+      scheduleApplyZoom(); // rAF supaya smooth
     } else if (e.touches.length === 1 && !pinching && zScale > 1) {
-      // pan saat sedang zoom
       const dx = e.touches[0].clientX - t1x;
       const dy = e.touches[0].clientY - t1y;
       zPanX += dx;
@@ -422,20 +446,17 @@ function initLightbox() {
       t1x = e.touches[0].clientX;
       t1y = e.touches[0].clientY;
       clampPan();
-      applyZoom(false);
+      scheduleApplyZoom(); // rAF supaya smooth
     }
-  }, { passive: false });
+  }, { passive: true }); // PASSIVE = browser tidak block, jauh lebih smooth
 
   frame.addEventListener('touchend', (e) => {
     pinching = false;
-
-    // snap balik kalau scale hampir 1
     if (zScale < 1.05) {
       zScale = 1; zPanX = 0; zPanY = 0;
       applyZoom(true);
     }
-
-    // swipe kiri/kanan hanya kalau tidak zoom
+    // swipe hanya kalau tidak zoom
     if (zScale <= 1 && e.changedTouches.length === 1 && e.touches.length === 0) {
       const dx = e.changedTouches[0].clientX - t1x;
       const dy = e.changedTouches[0].clientY - t1y;
