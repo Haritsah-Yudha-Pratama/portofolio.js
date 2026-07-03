@@ -584,9 +584,115 @@ function initCertViewer() {
     if (viewer.classList.contains('open') && e.key === 'Escape') close();
   });
 
-  // Blokir klik kanan & drag pada canvas supaya tidak mudah di-save
+  // Blokir klik kanan & drag
   canvas.addEventListener('contextmenu', (e) => e.preventDefault());
-  canvas.addEventListener('dragstart', (e) => e.preventDefault());
+  canvas.addEventListener('dragstart',   (e) => e.preventDefault());
+
+  // ── Zoom: pinch + double-tap + wheel (desktop) ──
+  const certFrame = viewer.querySelector('.lightbox-frame');
+  if (!certFrame) return;
+
+  let cZ = 1, cX = 0, cY = 0;
+  const CZ_MAX = 5, CZ_MIN = 1;
+  let cLastTap = 0, cPinching = false;
+  let cDist0 = 0, cScale0 = 1, cPX0 = 0, cPY0 = 0;
+  let cT1x = 0, cT1y = 0;
+  let cRaf = null, cPending = false;
+
+  canvas.style.willChange = 'transform';
+  canvas.style.transformOrigin = 'center center';
+  certFrame.style.touchAction = 'none';
+
+  function cClamp() {
+    if (cZ <= 1) { cX = 0; cY = 0; return; }
+    const maxX = Math.max(0, (canvas.clientWidth  * cZ - certFrame.clientWidth)  / 2);
+    const maxY = Math.max(0, (canvas.clientHeight * cZ - certFrame.clientHeight) / 2);
+    cX = Math.max(-maxX, Math.min(maxX, cX));
+    cY = Math.max(-maxY, Math.min(maxY, cY));
+  }
+
+  function cApply(animated) {
+    if (cRaf) cancelAnimationFrame(cRaf);
+    cPending = false;
+    if (animated) {
+      canvas.style.transition = 'transform 0.3s cubic-bezier(0.22,1,0.36,1)';
+      requestAnimationFrame(() => { canvas.style.transform = `translate(${cX}px,${cY}px) scale(${cZ})`; });
+    } else {
+      if (cPending) return;
+      cPending = true;
+      cRaf = requestAnimationFrame(() => {
+        cPending = false;
+        canvas.style.transition = 'none';
+        canvas.style.transform = `translate(${cX}px,${cY}px) scale(${cZ})`;
+      });
+    }
+  }
+
+  function cReset() {
+    cZ = 1; cX = 0; cY = 0;
+    canvas.style.transition = 'none';
+    canvas.style.transform = 'none';
+  }
+
+  // Reset tiap buka
+  const _origOpen = open;
+  open = function(certKey) { cReset(); _origOpen(certKey); };
+
+  certFrame.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 1) {
+      cT1x = e.touches[0].clientX;
+      cT1y = e.touches[0].clientY;
+      cPinching = false;
+      const now = Date.now();
+      if (now - cLastTap < 280) {
+        e.preventDefault();
+        if (cZ > 1) { cZ = 1; cX = 0; cY = 0; cApply(true); }
+        else {
+          const r = canvas.getBoundingClientRect();
+          const tx = cT1x - r.left - r.width  / 2;
+          const ty = cT1y - r.top  - r.height / 2;
+          cZ = 2.5;
+          cX = -(tx * (cZ - 1)) / cZ;
+          cY = -(ty * (cZ - 1)) / cZ;
+          cClamp(); cApply(true);
+        }
+      }
+      cLastTap = now;
+    } else if (e.touches.length === 2) {
+      e.preventDefault();
+      cPinching = true;
+      const dx = e.touches[1].clientX - e.touches[0].clientX;
+      const dy = e.touches[1].clientY - e.touches[0].clientY;
+      cDist0 = Math.hypot(dx, dy); cScale0 = cZ; cPX0 = cX; cPY0 = cY;
+    }
+  }, { passive: false });
+
+  certFrame.addEventListener('touchmove', (e) => {
+    if (e.touches.length === 2 && cPinching) {
+      const dx = e.touches[1].clientX - e.touches[0].clientX;
+      const dy = e.touches[1].clientY - e.touches[0].clientY;
+      cZ = Math.min(CZ_MAX, Math.max(CZ_MIN, cScale0 * (Math.hypot(dx, dy) / cDist0)));
+      cX = cPX0; cY = cPY0; cClamp(); cApply(false);
+    } else if (e.touches.length === 1 && !cPinching && cZ > 1) {
+      cX += e.touches[0].clientX - cT1x;
+      cY += e.touches[0].clientY - cT1y;
+      cT1x = e.touches[0].clientX;
+      cT1y = e.touches[0].clientY;
+      cClamp(); cApply(false);
+    }
+  }, { passive: true });
+
+  certFrame.addEventListener('touchend', () => {
+    cPinching = false;
+    if (cZ < 1.05) { cZ = 1; cX = 0; cY = 0; cApply(true); }
+  }, { passive: true });
+
+  // Desktop: scroll wheel zoom
+  certFrame.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    cZ = Math.min(CZ_MAX, Math.max(CZ_MIN, cZ * (e.deltaY > 0 ? 0.85 : 1.15)));
+    cClamp(); cApply(false);
+  }, { passive: false });
 }
 
 initCertViewer();
