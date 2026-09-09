@@ -501,6 +501,45 @@ function initLightbox() {
       }
     }
   }, { passive: true });
+
+  // ── Desktop: double-click buat zoom (mirror double-tap di atas) ──
+  frame.addEventListener('dblclick', (e) => {
+    e.preventDefault();
+    if (zScale > 1) {
+      zScale = 1; zPanX = 0; zPanY = 0;
+      applyZoom(true);
+    } else {
+      const rect = img.getBoundingClientRect();
+      const clickX = e.clientX - rect.left - rect.width / 2;
+      const clickY = e.clientY - rect.top  - rect.height / 2;
+      zScale = 2.5;
+      zPanX = -(clickX * (zScale - 1)) / zScale;
+      zPanY = -(clickY * (zScale - 1)) / zScale;
+      clampPan();
+      applyZoom(true);
+    }
+  });
+
+  // ── Desktop: drag buat geser pas lagi zoom ──
+  let mDragging = false, mLastX = 0, mLastY = 0;
+  frame.addEventListener('mousedown', (e) => {
+    if (zScale <= 1) return;
+    mDragging = true;
+    mLastX = e.clientX; mLastY = e.clientY;
+    frame.style.cursor = 'grabbing';
+    e.preventDefault();
+  });
+  window.addEventListener('mousemove', (e) => {
+    if (!mDragging) return;
+    zPanX += e.clientX - mLastX;
+    zPanY += e.clientY - mLastY;
+    mLastX = e.clientX; mLastY = e.clientY;
+    clampPan();
+    scheduleApplyZoom();
+  });
+  window.addEventListener('mouseup', () => {
+    if (mDragging) { mDragging = false; frame.style.cursor = zScale > 1 ? 'grab' : ''; }
+  });
 }
 
 initLightbox();
@@ -728,6 +767,43 @@ function initCertViewer() {
     cZ = Math.min(CZ_MAX, Math.max(CZ_MIN, cZ * (e.deltaY > 0 ? 0.85 : 1.15)));
     cClamp(); cApply(false);
   }, { passive: false });
+
+  // ── Desktop: double-click buat zoom (mirror double-tap di atas) ──
+  certFrame.addEventListener('dblclick', (e) => {
+    e.preventDefault();
+    if (cZ > 1) {
+      cZ = 1; cX = 0; cY = 0;
+      cApply(true);
+    } else {
+      const r = canvas.getBoundingClientRect();
+      const clickX = e.clientX - r.left - r.width  / 2;
+      const clickY = e.clientY - r.top  - r.height / 2;
+      cZ = 2.5;
+      cX = -(clickX * (cZ - 1)) / cZ;
+      cY = -(clickY * (cZ - 1)) / cZ;
+      cClamp(); cApply(true);
+    }
+  });
+
+  // ── Desktop: drag buat geser pas lagi zoom ──
+  let cmDragging = false, cmLastX = 0, cmLastY = 0;
+  certFrame.addEventListener('mousedown', (e) => {
+    if (cZ <= 1) return;
+    cmDragging = true;
+    cmLastX = e.clientX; cmLastY = e.clientY;
+    certFrame.style.cursor = 'grabbing';
+    e.preventDefault();
+  });
+  window.addEventListener('mousemove', (e) => {
+    if (!cmDragging) return;
+    cX += e.clientX - cmLastX;
+    cY += e.clientY - cmLastY;
+    cmLastX = e.clientX; cmLastY = e.clientY;
+    cClamp(); cApply(false);
+  });
+  window.addEventListener('mouseup', () => {
+    if (cmDragging) { cmDragging = false; certFrame.style.cursor = cZ > 1 ? 'grab' : ''; }
+  });
 }
 
 initCertViewer();
