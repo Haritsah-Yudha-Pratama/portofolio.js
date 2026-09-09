@@ -628,6 +628,21 @@ function initCertThumbnails() {
       wrapperId: 'certThumb1',
       pdf:  'assets/certificates/sertifikat_c959aaab-56d9-42dc-81b4-6045e7850e27 (1).pdf',
       viewKey: 'cert1',
+      rotate: 0,
+    },
+    {
+      canvasId: 'certCanvas2',
+      wrapperId: 'certThumb2',
+      pdf:  'assets/certificates/scan0078.pdf',
+      viewKey: 'cert2',
+      rotate: 90,
+    },
+    {
+      canvasId: 'certCanvas3',
+      wrapperId: 'certThumb3',
+      pdf:  'assets/certificates/scan0079.pdf',
+      viewKey: 'cert3',
+      rotate: 90,
     },
   ];
 
@@ -635,7 +650,7 @@ function initCertThumbnails() {
   pdfjsLib.GlobalWorkerOptions.workerSrc =
     'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-  certs.forEach(({ canvasId, wrapperId, pdf, viewKey }) => {
+  certs.forEach(({ canvasId, wrapperId, pdf, viewKey, rotate }) => {
     const canvas  = document.getElementById(canvasId);
     const wrapper = document.getElementById(wrapperId);
     if (!canvas || !wrapper) return;
@@ -643,11 +658,11 @@ function initCertThumbnails() {
     pdfjsLib.getDocument(pdf).promise
       .then(doc => doc.getPage(1))
       .then(page => {
-        const viewport = page.getViewport({ scale: 1 });
+        const viewport = page.getViewport({ scale: 1, rotation: rotate || 0 });
         const wrap  = canvas.closest('.cert-canvas-wrap');
         const w     = (wrap ? wrap.offsetWidth : 200) || 200;
         const scale = (w / viewport.width) * 2;
-        const scaled = page.getViewport({ scale });
+        const scaled = page.getViewport({ scale, rotation: rotate || 0 });
         canvas.width  = scaled.width;
         canvas.height = scaled.height;
         page.render({ canvasContext: canvas.getContext('2d'), viewport: scaled });
@@ -671,7 +686,9 @@ initCertThumbnails();
 // ============ CERT VIEWER (lihat-saja, tanpa link download) ============
 function initCertViewer() {
   const certPdfMap = {
-    cert1: 'assets/certificates/sertifikat_c959aaab-56d9-42dc-81b4-6045e7850e27 (1).pdf',
+    cert1: { pdf: 'assets/certificates/sertifikat_c959aaab-56d9-42dc-81b4-6045e7850e27 (1).pdf', rotate: 0 },
+    cert2: { pdf: 'assets/certificates/scan0078.pdf', rotate: 90 },
+    cert3: { pdf: 'assets/certificates/scan0079.pdf', rotate: 90 },
   };
 
   const viewer   = document.getElementById('certViewer');
@@ -683,21 +700,21 @@ function initCertViewer() {
   if (!viewer || !canvas) return;
 
   function open(certKey) {
-    const pdfPath = certPdfMap[certKey];
-    if (!pdfPath || typeof pdfjsLib === 'undefined') return;
+    const entry = certPdfMap[certKey];
+    if (!entry || typeof pdfjsLib === 'undefined') return;
 
     canvas.classList.remove('cert-revealed');
     loader.classList.remove('hidden');
     viewer.classList.add('open');
     document.body.style.overflow = 'hidden';
 
-    pdfjsLib.getDocument(pdfPath).promise
+    pdfjsLib.getDocument(entry.pdf).promise
       .then(doc => doc.getPage(1))
       .then(page => {
-        const viewport = page.getViewport({ scale: 1 });
+        const viewport = page.getViewport({ scale: 1, rotation: entry.rotate || 0 });
         const targetW = Math.min(wrap.clientWidth || 800, 900);
         const scale = (targetW / viewport.width) * 2; // retina
-        const scaled = page.getViewport({ scale });
+        const scaled = page.getViewport({ scale, rotation: entry.rotate || 0 });
         canvas.width = scaled.width;
         canvas.height = scaled.height;
         return page.render({ canvasContext: canvas.getContext('2d'), viewport: scaled }).promise;
