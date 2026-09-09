@@ -540,6 +540,26 @@ function initLightbox() {
   window.addEventListener('mouseup', () => {
     if (mDragging) { mDragging = false; frame.style.cursor = zScale > 1 ? 'grab' : ''; }
   });
+
+  // ── Desktop: scroll wheel zoom (fokus di posisi kursor) ──
+  frame.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const newScale = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, zScale * (e.deltaY > 0 ? 0.85 : 1.15)));
+    if (newScale === zScale) return;
+
+    const rect = img.getBoundingClientRect();
+    const cx = e.clientX - rect.left - rect.width  / 2;
+    const cy = e.clientY - rect.top  - rect.height / 2;
+
+    // Jaga titik di bawah kursor tetap di tempat yang sama pas scale berubah
+    zPanX = cx - ((cx - zPanX) * (newScale / zScale));
+    zPanY = cy - ((cy - zPanY) * (newScale / zScale));
+    zScale = newScale;
+
+    if (zScale <= 1.02) { zScale = 1; zPanX = 0; zPanY = 0; }
+    clampPan();
+    applyZoom(false);
+  }, { passive: false });
 }
 
 initLightbox();
