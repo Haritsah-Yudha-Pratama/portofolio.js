@@ -165,6 +165,53 @@ function initSkillBars() {
 
 initSkillBars();
 
+// ============ COUNT-UP ANGKA STATS (About) ============
+function initStatCounters() {
+  const stats = document.querySelectorAll('.stat-num');
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el  = e.target;
+      const raw = el.textContent.trim();
+      obs.unobserve(el);
+
+      // Simbol non-angka (∞) atau reduced-motion -- biarin apa adanya, gak di-count
+      const match = raw.match(/^(\d+(?:\.\d+)?)(.*)$/);
+      if (!match || prefersReduced) return;
+
+      const target   = parseFloat(match[1]);
+      const suffix   = match[2] || '';
+      const decimals = (match[1].split('.')[1] || '').length;
+      const duration = 1400;
+      const start    = performance.now();
+
+      function tick(now) {
+        const progress = Math.min((now - start) / duration, 1);
+        const eased    = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+        el.textContent = (target * eased).toFixed(decimals) + suffix;
+        if (progress < 1) requestAnimationFrame(tick);
+        else el.textContent = target.toFixed(decimals) + suffix;
+      }
+      requestAnimationFrame(tick);
+    });
+  }, { threshold: 0.4 });
+
+  stats.forEach(el => obs.observe(el));
+}
+initStatCounters();
+
+// ============ STAGGER GRID (index buat transition-delay CSS) ============
+function initStaggerGrids() {
+  document.querySelectorAll('.skills-grid, .projects-grid, .cert-grid').forEach(grid => {
+    Array.from(grid.children).forEach((child, i) => {
+      child.style.setProperty('--stagger-i', i);
+    });
+  });
+}
+initStaggerGrids();
+
 // ============ SCROLL TO TOP ============
 function initScrollTop() {
   const btn = document.getElementById('scrollTop');
